@@ -2,18 +2,37 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:GoDentalAPP"
-        Title="GoDentalAPP" Height="600" Width="800">
-    <DockPanel>
-        <!-- Menú superior -->
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="Entidades">
-                <MenuItem Header="Clientes" Command="{Binding ShowClientesCommand}" />
-                <MenuItem Header="Productos" Command="{Binding ShowProductosCommand}" />
-                <MenuItem Header="Ventas" Command="{Binding ShowVentasCommand}" />
-            </MenuItem>
-        </Menu>
+        Title="Depósito Dental" Height="600" Width="1000">
+    <Grid>
+        <!-- Definir columnas: Panel lateral y contenido principal -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" /> <!-- Panel lateral -->
+            <ColumnDefinition Width="*" />   <!-- Contenido principal -->
+        </Grid.ColumnDefinitions>
 
-        <!-- Contenido dinámico -->
-        <ContentControl Content="{Binding CurrentView}" />
-    </DockPanel>
+        <!-- Panel lateral -->
+        <StackPanel Background="#2C3E50" VerticalAlignment="Stretch">
+            <Button Content="Productos" Command="{Binding ShowProductosCommand}" 
+                    Style="{StaticResource MenuButtonStyle}" />
+            <Button Content="Proveedores" Command="{Binding ShowProveedoresCommand}" 
+                    Style="{StaticResource MenuButtonStyle}" />
+            <Button Content="Clientes" Command="{Binding ShowClientesCommand}" 
+                    Style="{StaticResource MenuButtonStyle}" />
+            <Button Content="Ventas" Command="{Binding ShowVentasCommand}" 
+                    Style="{StaticResource MenuButtonStyle}" />
+            <Button Content="Órdenes de Compra" Command="{Binding ShowOrdenesCompraCommand}" 
+                    Style="{StaticResource MenuButtonStyle}" />
+            <Button Content="Usuarios" Command="{Binding ShowUsuariosCommand}" 
+                    Style="{StaticResource MenuButtonStyle}" />
+            <Button Content="Calculadora" Command="{Binding ShowCalculadoraCommand}" 
+                    Style="{StaticResource MenuButtonStyle}" />
+            <Button Content="Reportes" Command="{Binding ShowReportesCommand}" 
+                    Style="{StaticResource MenuButtonStyle}" />
+            <Button Content="Calendario" Command="{Binding ShowCalendarioCommand}" 
+                    Style="{StaticResource MenuButtonStyle}" />
+        </StackPanel>
+
+        <!-- Contenido principal -->
+        <ContentControl Grid.Column="1" Content="{Binding CurrentView}" />
+    </Grid>
 </Window>

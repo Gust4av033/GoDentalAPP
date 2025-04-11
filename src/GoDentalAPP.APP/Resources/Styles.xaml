@@ -60,6 +60,34 @@
         </Setter>
     </Style>
 
+    <!-- Button Style (for the side panel)-->
+    <!-- This style is specifically for the buttons in the side panel of the application. -->
+    <Style x:Key="MenuButtonStyle" TargetType="Button">
+    <Setter Property="Margin" Value="10" />
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="FontSize" Value="16" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Background" Value="#34495E" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+        <Setter.Value>
+            <ControlTemplate TargetType="Button">
+                <Border Background="{TemplateBinding Background}" CornerRadius="5">
+                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+            </ControlTemplate>
+        </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+            <Setter Property="Background" Value="#1ABC9C" />
+        </Trigger>
+    </Style.Triggers>
+    </Style>
+
     <!-- Primary Button Style -->
     <Style x:Key="PrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Background" Value="{StaticResource AccentBlueBrush}" />
