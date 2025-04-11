@@ -1,27 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
-namespace GoDentalAPP.src.GoDentalAPP.APP.Views.Login
+namespace GoDentalAPP.Views.Login
 {
-    /// <summary>
-    /// Lógica de interacción para LoginView.xaml
-    /// </summary>
     public partial class LoginView : Window
     {
         public LoginView()
         {
             InitializeComponent();
+        }
+
+        private bool ValidarCredenciales(string usuario, string contraseña)
+        {
+            // Simulación de validación (puedes reemplazar esto con una consulta a la base de datos)
+            return usuario == "admin" && contraseña == "1234";
+        }
+
+        private void OnLoginButtonClick(object sender, RoutedEventArgs e)
+        {
+            string usuario = UsernameTextBox.Text;
+            string contraseña = PasswordBox.Password;
+
+            if (ValidarCredenciales(usuario, contraseña))
+            {
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.Show();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Usuario o contraseña incorrectos.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ namespace GoDentalAPP.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private object _currentView;
+        private object _currentView = new object();
 
         public object CurrentView
         {
@@ -46,7 +46,7 @@ namespace GoDentalAPP.ViewModels
             CurrentView = new ProductosViewModel();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
