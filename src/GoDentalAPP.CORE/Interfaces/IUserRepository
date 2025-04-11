@@ -1,0 +1,5 @@
+como// filepath: src/GoDentalAPP.CORE/Interfaces/IUserRepository.cs
+public interface IUserRepository
+{
+    Task<User?> GetUserByCredentialsAsync(string username, string password);
+}

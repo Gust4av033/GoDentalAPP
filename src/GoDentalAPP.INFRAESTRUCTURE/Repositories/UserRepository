@@ -1,0 +1,16 @@
+// filepath: src/GoDentalAPP.INFRAESTRUCTURE/Repositories/UserRepository.cs
+public class UserRepository : IUserRepository
+{
+    private readonly DbContext _context;
+
+    public UserRepository(DbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<User?> GetUserByCredentialsAsync(string username, string password)
+    {
+        return await _context.Users
+            .FirstOrDefaultAsync(u => u.NombreUsuario == username && u.Contrasena == password);
+    }
+}

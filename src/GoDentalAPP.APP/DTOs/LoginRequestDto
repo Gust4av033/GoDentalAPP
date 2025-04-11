@@ -1,0 +1,6 @@
+// filepath: src/GoDentalAPP.APP/DTOs/LoginRequestDto.cs
+public class LoginRequestDto
+{
+    public string Username { get; set; }
+    public string Password { get; set; }
+}

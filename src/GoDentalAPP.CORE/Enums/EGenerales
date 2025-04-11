@@ -1,0 +1,25 @@
+namespace GoDentalAPP.Core.Enums
+{
+    public enum EstadoCliente
+    {
+        Activo = 1,
+        Inactivo = 2,
+        Eliminado = 3
+    }
+    public enum EstadoPedido
+    {
+        Pendiente = 1,
+        EnProceso = 2,
+        Completado = 3,
+        Cancelado = 4
+    }
+
+    public enum TipoPago
+    {
+        Efectivo = 1,
+        TarjetaCredito = 2,
+        TarjetaDebito = 3,
+        Transferencia = 4
+    }
+
+}
