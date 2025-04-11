@@ -1,8 +1,8 @@
 ﻿<Window x:Class="GoDentalAPP.Views.Login.LoginView"
-        Style="{StaticResource {x:Type Window}}"
+         Style="{StaticResource {x:Type Window}}"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Inicio de Sesión" Height="300" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="Inicio de Sesión" Height="400" Width="375" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -15,14 +15,20 @@
 
         <StackPanel Grid.Row="1" Margin="0,0,0,10">
             <TextBlock Text="Usuario:" Margin="0,0,0,5" />
-            <TextBox Name="UsernameTextBox" Width="300" />
+            <TextBox Width="300" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
 
         <StackPanel Grid.Row="2" Margin="0,0,0,10">
             <TextBlock Text="Contraseña:" Margin="0,0,0,5" />
-            <PasswordBox Name="PasswordBox" Width="300" />
+            <PasswordBox Width="300">
+                <PasswordBox.Template>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" />
+                    </ControlTemplate>
+                </PasswordBox.Template>
+            </PasswordBox>
         </StackPanel>
 
-        <Button Grid.Row="3" Content="Iniciar Sesión" Width="150" Height="40" HorizontalAlignment="Center" Click="OnLoginButtonClick" />
+        <Button Grid.Row="3" Content="Iniciar Sesión" Width="150" Height="40" HorizontalAlignment="Center" Command="{Binding LoginCommand}" />
     </Grid>
 </Window>
