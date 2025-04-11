@@ -44,5 +44,8 @@
             <TextBlock Text="¿No tienes cuenta?" Margin="0,0,5,0" />
             <Button Content="Crear Cuenta" Command="{Binding OpenRegisterUserCommand}" />
         </StackPanel>
+
+        <Button Grid.Row="4" Content="Registrar" Width="150" Height="40" HorizontalAlignment="Center" Command="{Binding OpenRegisterUserCommand}" />
+
     </Grid>
 </Window>

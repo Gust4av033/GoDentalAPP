@@ -67,9 +67,9 @@ namespace GoDentalAPP.ViewModels
 
         private void OpenRegister(object parameter)
         {
-            var registerWindow = new RDUsuario();
+            var registerWindow = new RDUsuario(); // Adjust to your actual class path
             registerWindow.Show();
-            Application.Current.MainWindow?.Close();
+            Application.Current.MainWindow?.Hide(); // Hide instead of Close
         }
         /*
         private void OpenRecoverPassword(object parameter)
