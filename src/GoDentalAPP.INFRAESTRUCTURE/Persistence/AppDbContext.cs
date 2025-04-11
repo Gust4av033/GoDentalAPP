@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using GoDentalAPP.Core.Entities;
+using System.Configuration; // Necesario para ConfigurationManager
 
 namespace GoDentalAPP.Infrastructure.Persistence
 {
@@ -11,14 +12,20 @@ namespace GoDentalAPP.Infrastructure.Persistence
         public DbSet<User> Users { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Estado> Estados { get; set; }
-        public DbSet<Categoria> Categorias { get; set; }
-        public DbSet<Compra> Compras { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                // Accede directamente a la cadena de conexión
+                string connectionString = ConfigurationManager.ConnectionStrings["GoDentalAPP.Properties.Settings.Cconexion"].ConnectionString;
+                optionsBuilder.UseSqlServer(connectionString);
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // Aplicar todas las configuraciones desde la carpeta Configurations
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }
     }
