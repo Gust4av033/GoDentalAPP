@@ -1,4 +1,5 @@
 ﻿<Window x:Class="GoDentalAPP.Views.Login.LoginView"
+        Style="{StaticResource {x:Type Window}}"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Inicio de Sesión" Height="300" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
