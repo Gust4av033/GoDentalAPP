@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore; // Ensure this is included
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using GoDentalAPP.Core.Entities;
 
@@ -8,15 +8,35 @@ namespace GoDentalAPP.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.ToTable("Usuarios"); // Maps the entity to the table "Usuarios"
+            builder.ToTable("Usuarios");
             builder.HasKey(u => u.UserID);
-            builder.Property(u => u.NombreUsuario).IsRequired().HasMaxLength(50);
-            builder.Property(u => u.CorreoElectronico).IsRequired().HasMaxLength(100);
-            builder.Property(u => u.Contrasena).IsRequired().HasMaxLength(255);
-            builder.Property(u => u.FechaRegistro).HasDefaultValueSql("GETDATE()");
-            builder.Property(u => u.Estado).HasDefaultValue(true);
-            builder.HasOne(u => u.Rol)
+
+            builder.Property(u => u.NombreUsuario)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            builder.Property(u => u.CorreoElectronico)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.Property(u => u.Contrasena)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            builder.Property(u => u.FechaRegistro)
+                .HasDefaultValueSql("GETDATE()");
+
+            // Establecer valor por defecto para la FK
+            builder.Property(u => u.EstadoId)
+                   .HasDefaultValue(1); // Suponiendo que el ID 1 es "Activo"
+
+            builder.HasOne(u => u.Estado)
                    .WithMany()
+                   .HasForeignKey(u => u.EstadoId);
+
+            // Configuración CORRECTA de la relación:
+            builder.HasOne(u => u.Rol)  // Propiedad de navegación a Roles
+                   .WithMany(r => r.Usuarios)  // Colección inversa en Roles
                    .HasForeignKey(u => u.RolID)
                    .OnDelete(DeleteBehavior.SetNull);
         }

@@ -9,6 +9,7 @@ namespace GoDentalAPP
     /// </summary>
     public partial class App : Application
     {
+        public static object ServiceProvider { get; internal set; }
     }
 
 }

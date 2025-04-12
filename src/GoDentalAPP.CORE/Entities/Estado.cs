@@ -1,4 +1,4 @@
-namespace GoDentalAPP.Core.Entities
+﻿namespace GoDentalAPP.Core.Entities
 {
     public class Estado
     {

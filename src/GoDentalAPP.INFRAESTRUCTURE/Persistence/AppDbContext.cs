@@ -8,12 +8,16 @@ namespace GoDentalAPP.Infrastructure.Persistence
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
+        public AppDbContext()
+        {
+        }
+
         // DbSets para las entidades
         public DbSet<User> Users { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
-        public DbSet<Estado> Estados { get; set; }
+        
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void     OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
@@ -27,6 +31,11 @@ namespace GoDentalAPP.Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        }
+
+        public static AppDbContext Create()
+        {
+            return new AppDbContext();
         }
     }
 }

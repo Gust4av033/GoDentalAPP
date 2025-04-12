@@ -5,35 +5,62 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GoDentalAPP.src.GoDentalAPP.APP.Views.Login"
+        xmlns:converters="clr-namespace:GoDentalAPP.APP.Converters"
         mc:Ignorable="d"
-        Title="RDUsuario" Height="450" Width="800">
-    <Grid>
+        Title="Registro de Usuario" Height="500" Width="400"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+
+    <Grid Margin="20">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Registrar Usuario" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20" />
+        <!-- Título -->
+        <TextBlock Grid.Row="0" Text="Registro de Usuario" FontSize="20" FontWeight="Bold" 
+                   HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
+        <!-- Nombre de Usuario -->
         <StackPanel Grid.Row="1" Margin="0,0,0,10">
-            <TextBlock Text="Nombre de Usuario:" Margin="0,0,0,5" />
-            <TextBox Width="300" Text="{Binding NombreUsuario, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Text="Nombre de Usuario:" Margin="0,0,0,5"/>
+            <TextBox Width="300" Text="{Binding NombreUsuario, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
+        <!-- Correo Electrónico -->
         <StackPanel Grid.Row="2" Margin="0,0,0,10">
-            <TextBlock Text="Correo Electrónico:" Margin="0,0,0,5" />
-            <TextBox Width="300" Text="{Binding CorreoElectronico, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Text="Correo Electrónico:" Margin="0,0,0,5"/>
+            <TextBox Width="300" Text="{Binding CorreoElectronico, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
+        <!-- Contraseña -->
         <StackPanel Grid.Row="3" Margin="0,0,0,10">
-            <TextBlock Text="Contraseña:" Margin="0,0,0,5" />
-            <PasswordBox Width="300" PasswordChanged="PasswordBox_PasswordChanged" />
-
+            <TextBlock Text="Contraseña:" Margin="0,0,0,5"/>
+            <PasswordBox x:Name="PasswordBox" Width="300" PasswordChanged="PasswordBox_PasswordChanged"/>
         </StackPanel>
 
-        <Button Grid.Row="4" Content="Registrar" Width="150" Height="40" HorizontalAlignment="Center" Command="{Binding RegisterUserCommand}" />
-        
+        <!-- Confirmar Contraseña -->
+        <StackPanel Grid.Row="4" Margin="0,0,0,10">
+            <TextBlock Text="Confirmar Contraseña:" Margin="0,0,0,5"/>
+            <PasswordBox x:Name="ConfirmPasswordBox" Width="300" PasswordChanged="ConfirmPasswordBox_PasswordChanged"/>
+        </StackPanel>
+
+        <!-- Mensaje de Error -->
+        <TextBlock Grid.Row="5" Text="{Binding ErrorMessage}" Foreground="Red" 
+                   HorizontalAlignment="Center" Margin="0,10,0,0"
+                   Visibility="{Binding IsErrorVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+        <!-- Botón de Registro -->
+        <Button Grid.Row="6" Content="Registrar" Width="150" Height="40" 
+                HorizontalAlignment="Center" Margin="0,20,0,0"
+                Command="{Binding RegisterUserCommand}"/>
     </Grid>
 </Window>

@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations; // ¡Agrega esto!
 
-namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
+
+namespace GoDentalAPP.Core.Entities
 {
-    class Roles
+    public class Roles // Cambiado a public
     {
+        [Key]
         public int RolID { get; set; }
-        public string NombreRol { get; set; }
+        public required string NombreRol { get; set; }
         public string Descripcion { get; set; }
 
-        // Relación inversa con Usuario
-        public ICollection<User> Usuarios { get; set; }
+        // Relación inversa (DEBE ser public)
+        public virtual ICollection<User> Usuarios { get; set; }
     }
 }

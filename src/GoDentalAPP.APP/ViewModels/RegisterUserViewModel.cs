@@ -5,16 +5,21 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows;
 using GoDentalAPP.Helpers;
+using System.Text.RegularExpressions;
+using System.Linq;
+using GoDentalAPP.INFRAESTRUCTURE.Repositorios;  // Para el repositorio
 
 namespace GoDentalAPP.ViewModels
 {
     public class RegisterUserViewModel : INotifyPropertyChanged
     {
-        private readonly AppDbContext _dbContext; // Inyectar el contexto
-
+        private readonly IUserRepository _userRepository;
         private string _nombreUsuario = string.Empty;
         private string _correoElectronico = string.Empty;
         private string _contrasena = string.Empty;
+        private string _confirmarContrasena = string.Empty;
+        private string _errorMessage = string.Empty;
+        private bool _isErrorVisible;
 
         public string NombreUsuario
         {
@@ -34,29 +39,134 @@ namespace GoDentalAPP.ViewModels
             set { _contrasena = value; OnPropertyChanged(); }
         }
 
+        public string ConfirmarContrasena
+        {
+            get => _confirmarContrasena;
+            set { _confirmarContrasena = value; OnPropertyChanged(); }
+        }
+
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set { _errorMessage = value; OnPropertyChanged(); }
+        }
+
+        public bool IsErrorVisible
+        {
+            get => _isErrorVisible;
+            set { _isErrorVisible = value; OnPropertyChanged(); }
+        }
+
         public ICommand RegisterUserCommand { get; }
 
-        public RegisterUserViewModel(AppDbContext dbContext)
+        public RegisterUserViewModel(IUserRepository userRepository)
         {
-            _dbContext = dbContext; // Asignar el contexto inyectado
-            RegisterUserCommand = new RelayCommand(RegisterUser);
+            _userRepository = userRepository;
+            RegisterUserCommand = new RelayCommand(RegisterUser, CanRegisterUser);
+        }
+
+        private bool CanRegisterUser(object parameter)
+        {
+            return !string.IsNullOrWhiteSpace(NombreUsuario) &&
+                   !string.IsNullOrWhiteSpace(CorreoElectronico) &&
+                   !string.IsNullOrWhiteSpace(Contrasena) &&
+                   !string.IsNullOrWhiteSpace(ConfirmarContrasena);
         }
 
         private void RegisterUser(object parameter)
         {
-            var usuario = new User
+            if (!ValidateInputs())
+                return;
+
+            try
             {
-                NombreUsuario = NombreUsuario,
-                CorreoElectronico = CorreoElectronico,
-                Contrasena = Contrasena, // Asegúrate de encriptar la contraseña
-                FechaRegistro = DateTime.Now,
-                Estado = true
-            };
+                // Usar el repositorio en lugar del contexto directamente
+                var result = _userRepository.RegisterUser(
+                    NombreUsuario,
+                    CorreoElectronico,
+                    Contrasena // El repositorio debería encargarse del hashing
+                );
 
-            _dbContext.Users.Add(usuario);
-            _dbContext.SaveChanges();
+                if (result != 0)
+                {
+                    MessageBox.Show("Usuario registrado con éxito.", "Éxito",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    ResetForm();
+                }
+                else
+                {
+                    ErrorMessage = "No se pudo registrar el usuario. Intente nuevamente.";
+                    IsErrorVisible = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error al registrar: {ex.Message}";
+                IsErrorVisible = true;
+            }
+        }
 
-            MessageBox.Show("Usuario registrado con éxito.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+        private bool ValidateInputs()
+        {
+            // Validación de campos vacíos
+            if (string.IsNullOrWhiteSpace(NombreUsuario) ||
+                string.IsNullOrWhiteSpace(CorreoElectronico) ||
+                string.IsNullOrWhiteSpace(Contrasena) ||
+                string.IsNullOrWhiteSpace(ConfirmarContrasena))
+            {
+                ErrorMessage = "Todos los campos son obligatorios.";
+                IsErrorVisible = true;
+                return false;
+            }
+
+            // Validación de formato de email
+            if (!IsValidEmail(CorreoElectronico))
+            {
+                ErrorMessage = "Por favor ingrese un correo electrónico válido.";
+                IsErrorVisible = true;
+                return false;
+            }
+
+            // Validación de contraseña
+            if (Contrasena.Length < 8)
+            {
+                ErrorMessage = "La contraseña debe tener al menos 8 caracteres.";
+                IsErrorVisible = true;
+                return false;
+            }
+
+            // Confirmación de contraseña
+            if (Contrasena != ConfirmarContrasena)
+            {
+                ErrorMessage = "Las contraseñas no coinciden.";
+                IsErrorVisible = true;
+                return false;
+            }
+
+            IsErrorVisible = false;
+            return true;
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var regex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+                return regex.IsMatch(email);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void ResetForm()
+        {
+            NombreUsuario = string.Empty;
+            CorreoElectronico = string.Empty;
+            Contrasena = string.Empty;
+            ConfirmarContrasena = string.Empty;
+            IsErrorVisible = false;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

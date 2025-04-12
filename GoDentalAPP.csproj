@@ -9,6 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <COMReference Include="{bee4bfec-6683-3e67-9167-3c0cbc68f40a}">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>4</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>bee4bfec-6683-3e67-9167-3c0cbc68f40a</Guid>
+    </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="MaterialDesignColors" Version="5.2.1" />
     <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" />
@@ -34,6 +44,11 @@
 
   <ItemGroup>
     <Folder Include="src\GoDentalAPP.INFRAESTRUCTURE\Scripts\" />
+    <Folder Include="src\GoDentalAPP.INFRAESTRUCTURE\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="src\GoDentalAPP.INFRAESTRUCTURE\Repositorios\IUserRepository.cs" />
   </ItemGroup>
 
 </Project>

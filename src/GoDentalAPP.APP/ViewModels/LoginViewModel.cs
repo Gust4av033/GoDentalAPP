@@ -3,7 +3,10 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using GoDentalAPP.Helpers;
+using GoDentalAPP.INFRAESTRUCTURE.Repositorios;
+using GoDentalAPP.Infrastructure.Persistence;
 using GoDentalAPP.src.GoDentalAPP.APP.Views.Login;
+using GoDentalAPP.Core.Entities;
 
 namespace GoDentalAPP.ViewModels
 {
@@ -67,10 +70,14 @@ namespace GoDentalAPP.ViewModels
 
         private void OpenRegister(object parameter)
         {
-            var registerWindow = new RDUsuario(); // Adjust to your actual class path
-            registerWindow.Show();
-            Application.Current.MainWindow?.Hide(); // Hide instead of Close
+            using (var context = new AppDbContext())
+            {
+                var userRepository = new UserRepository(context);
+                var registerWindow = new RDUsuario(userRepository);
+                registerWindow.ShowDialog();
+            }
         }
+
         /*
         private void OpenRecoverPassword(object parameter)
         {
@@ -82,9 +89,34 @@ namespace GoDentalAPP.ViewModels
 
         private bool ValidarCredenciales(string usuario, string contraseña)
         {
-            // Implementa tu lógica real de validación aquí
-            return usuario == "admin" && contraseña == "1234";
+            using (var context = new AppDbContext())
+            {
+                var user = context.Users.FirstOrDefault(u => u.NombreUsuario == usuario);
+                if (user == null) return false;
+
+                var storedHash = user.Contrasena;
+
+                try
+                {
+                    // Intenta verificar con BCrypt (usuarios nuevos)
+                    if (BCrypt.Net.BCrypt.Verify(contraseña, storedHash))
+                        return true;
+                }
+                catch (BCrypt.Net.SaltParseException)
+                {
+                    // Si lanza error, asumimos que es un hash antiguo (SHA256)
+                    using (var sha256 = System.Security.Cryptography.SHA256.Create())
+                    {
+                        var bytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(contraseña));
+                        var hashSha256 = BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
+                        return hashSha256 == storedHash.ToLowerInvariant();
+                    }
+                }
+
+                return false;
+            }
         }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
