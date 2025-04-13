@@ -4,15 +4,15 @@ using System.Windows;
 using System.Windows.Input;
 using GoDentalAPP.Helpers;
 using GoDentalAPP.INFRAESTRUCTURE.Repositorios;
-using GoDentalAPP.Infrastructure.Persistence;
 using GoDentalAPP.src.GoDentalAPP.APP.Views.Login;
-using GoDentalAPP.Core.Entities;
 using GoDentalAPP.Views.Login;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GoDentalAPP.ViewModels
 {
     public class LoginViewModel : INotifyPropertyChanged
     {
+        private readonly IUserRepository _userRepository;
         private string _username;
         private string _password;
         private string _errorMessage;
@@ -44,13 +44,12 @@ namespace GoDentalAPP.ViewModels
 
         public ICommand LoginCommand { get; }
         public ICommand OpenRegisterUserCommand { get; }
-        public ICommand OpenRecoverPasswordCommand { get; }
 
-        public LoginViewModel()
+        public LoginViewModel(IUserRepository userRepository)
         {
+            _userRepository = userRepository;
             LoginCommand = new RelayCommand(ExecuteLogin);
             OpenRegisterUserCommand = new RelayCommand(OpenRegister);
-            //OpenRecoverPasswordCommand = new RelayCommand(OpenRecoverPassword);
             IsErrorVisible = false;
         }
 
@@ -58,7 +57,7 @@ namespace GoDentalAPP.ViewModels
         {
             if (ValidarCredenciales(Username, Password))
             {
-                var mainWindow = new MainWindow();
+                var mainWindow = App.ServiceProvider.GetService<MainWindow>();
                 mainWindow.Show();
                 Application.Current.MainWindow?.Close();
             }
@@ -71,59 +70,16 @@ namespace GoDentalAPP.ViewModels
 
         private void OpenRegister(object parameter)
         {
-            using (var context = new AppDbContext())
-            {
-                var userRepository = new UserRepository(context);
-                var registerWindow = new RDUsuario(userRepository);
-                registerWindow.Show(); // Usar Show() en lugar de ShowDialog()
+            var registerWindow = App.ServiceProvider.GetService<RDUsuario>();
+            registerWindow.Show();
 
-                // Cerrar la ventana de Login actual
-                if (Application.Current.MainWindow is LoginView loginWindow)
-                {
-                    loginWindow.Close();
-                }
-            }
-        }
-
-        /*
-        private void OpenRecoverPassword(object parameter)
-        {
-            // Implementa la lógica para recuperar contraseña
-            var recoverWindow = new RecuperarContraseña();
-            recoverWindow.Show();
             Application.Current.MainWindow?.Close();
-        }*/
+        }
 
         private bool ValidarCredenciales(string usuario, string contraseña)
         {
-            using (var context = new AppDbContext())
-            {
-                var user = context.Users.FirstOrDefault(u => u.NombreUsuario == usuario);
-                if (user == null) return false;
-
-                var storedHash = user.Contrasena;
-
-                try
-                {
-                    // Intenta verificar con BCrypt (usuarios nuevos)
-                    if (BCrypt.Net.BCrypt.Verify(contraseña, storedHash))
-                        return true;
-                }
-                catch (BCrypt.Net.SaltParseException)
-                {
-                    // Si lanza error, asumimos que es un hash antiguo (SHA256)
-                    using (var sha256 = System.Security.Cryptography.SHA256.Create())
-                    {
-                        var bytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(contraseña));
-                        var hashSha256 = BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
-                        return hashSha256 == storedHash.ToLowerInvariant();
-                    }
-                }
-
-                return false;
-            }
+            return _userRepository.VerifyCredentials(usuario, contraseña);
         }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -135,7 +91,6 @@ namespace GoDentalAPP.ViewModels
         protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(storage, value)) return false;
-
             storage = value;
             OnPropertyChanged(propertyName);
             return true;

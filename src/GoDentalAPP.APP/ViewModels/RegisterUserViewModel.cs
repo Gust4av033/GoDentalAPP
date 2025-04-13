@@ -177,10 +177,12 @@ namespace GoDentalAPP.ViewModels
 
         private void NavigateToLogin(object parameter)
         {
-            var loginWindow = new LoginView();
+            // Obtener el ViewModel desde el ServiceProvider
+            var loginViewModel = App.ServiceProvider.GetService<LoginViewModel>();
+            var loginWindow = new LoginView(loginViewModel); // Pasar el ViewModel
             loginWindow.Show();
 
-            // Cerrar la ventana de registro actual (RDUsuario)
+            // Cerrar la ventana actual (RDUsuario)
             if (Application.Current.Windows.OfType<RDUsuario>().FirstOrDefault() is RDUsuario currentRegisterWindow)
             {
                 currentRegisterWindow.Close();

@@ -5,10 +5,10 @@ namespace GoDentalAPP.Views.Login
 {
     public partial class LoginView : Window
     {
-        public LoginView()
+        public LoginView(LoginViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = new LoginViewModel();
+            DataContext = viewModel;
         }
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
