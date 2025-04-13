@@ -13,7 +13,7 @@
 
         <!-- Panel lateral -->
         <StackPanel Background="#2C3E50" VerticalAlignment="Stretch">
-            <Button Content="Productos" Command="{Binding ShowProductosCommand}" 
+            <Button Content="Productos" Command="{Binding MostrarProductosCommand}" 
                     Style="{StaticResource MenuButtonStyle}" />
             <Button Content="Proveedores" Command="{Binding ShowProveedoresCommand}" 
                     Style="{StaticResource MenuButtonStyle}" />

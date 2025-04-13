@@ -8,6 +8,8 @@ using GoDentalAPP.Helpers;
 using System.Text.RegularExpressions;
 using System.Linq;
 using GoDentalAPP.INFRAESTRUCTURE.Repositorios;  // Para el repositorio
+using GoDentalAPP.Views.Login;
+using GoDentalAPP.src.GoDentalAPP.APP.Views.Login;
 
 namespace GoDentalAPP.ViewModels
 {
@@ -58,11 +60,15 @@ namespace GoDentalAPP.ViewModels
         }
 
         public ICommand RegisterUserCommand { get; }
+        public ICommand NavigateToLoginCommand { get; } // Nuevo comando
+
 
         public RegisterUserViewModel(IUserRepository userRepository)
         {
             _userRepository = userRepository;
             RegisterUserCommand = new RelayCommand(RegisterUser, CanRegisterUser);
+            NavigateToLoginCommand = new RelayCommand(NavigateToLogin); // Inicializar el nuevo comando
+
         }
 
         private bool CanRegisterUser(object parameter)
@@ -167,6 +173,18 @@ namespace GoDentalAPP.ViewModels
             Contrasena = string.Empty;
             ConfirmarContrasena = string.Empty;
             IsErrorVisible = false;
+        }
+
+        private void NavigateToLogin(object parameter)
+        {
+            var loginWindow = new LoginView();
+            loginWindow.Show();
+
+            // Cerrar la ventana de registro actual (RDUsuario)
+            if (Application.Current.Windows.OfType<RDUsuario>().FirstOrDefault() is RDUsuario currentRegisterWindow)
+            {
+                currentRegisterWindow.Close();
+            }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

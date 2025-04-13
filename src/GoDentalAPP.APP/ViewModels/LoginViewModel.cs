@@ -7,6 +7,7 @@ using GoDentalAPP.INFRAESTRUCTURE.Repositorios;
 using GoDentalAPP.Infrastructure.Persistence;
 using GoDentalAPP.src.GoDentalAPP.APP.Views.Login;
 using GoDentalAPP.Core.Entities;
+using GoDentalAPP.Views.Login;
 
 namespace GoDentalAPP.ViewModels
 {
@@ -74,7 +75,13 @@ namespace GoDentalAPP.ViewModels
             {
                 var userRepository = new UserRepository(context);
                 var registerWindow = new RDUsuario(userRepository);
-                registerWindow.ShowDialog();
+                registerWindow.Show(); // Usar Show() en lugar de ShowDialog()
+
+                // Cerrar la ventana de Login actual
+                if (Application.Current.MainWindow is LoginView loginWindow)
+                {
+                    loginWindow.Close();
+                }
             }
         }
 

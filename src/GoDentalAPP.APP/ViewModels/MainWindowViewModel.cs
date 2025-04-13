@@ -16,10 +16,16 @@ namespace GoDentalAPP.ViewModels
             {
                 _currentView = value;
                 OnPropertyChanged();
+
+                // Si la vista actual es ProductosViewModel, cargar los datos automáticamente
+                if (value is ProductosViewModel productosViewModel)
+                {
+                    productosViewModel.MostrarProductosCommand.Execute(null);
+                }
             }
         }
 
-        public ICommand ShowProductosCommand { get; }
+        public ICommand MostrarProductosCommand { get; }
         public ICommand ShowProveedoresCommand { get; }
         public ICommand ShowClientesCommand { get; }
         public ICommand ShowVentasCommand { get; }
@@ -32,7 +38,7 @@ namespace GoDentalAPP.ViewModels
         public MainWindowViewModel()
         {
             // Inicializar comandos
-            ShowProductosCommand = new RelayCommand(o => CurrentView = new ProductosViewModel());
+            MostrarProductosCommand = new RelayCommand(o => CurrentView = new ProductosViewModel()); 
             ShowProveedoresCommand = new RelayCommand(o => CurrentView = new ProveedoresViewModel());
             ShowClientesCommand = new RelayCommand(o => CurrentView = new ClientesViewModel());
             ShowVentasCommand = new RelayCommand(o => CurrentView = new VentasViewModel());
@@ -46,7 +52,7 @@ namespace GoDentalAPP.ViewModels
             CurrentView = new ProductosViewModel();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
