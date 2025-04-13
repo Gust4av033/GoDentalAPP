@@ -11,6 +11,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsProducto
@@ -18,18 +19,12 @@ namespace GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsProducto
     /// <summary>
     /// Lógica de interacción para ProductosMainWindow.xaml
     /// </summary>
-    public partial class ProductosMainWindow : Window
+    public partial class ProductosMainWindow : UserControl
     {
         public ProductosMainWindow()
         {
             InitializeComponent();
-            this.DataContext = new ProductosViewModel();
-
-            /* Ejecuta el comando para cargar los datos al iniciar
-            if (DataContext is ProductosViewModel viewModel)
-            {
-                viewModel.MostrarProductosCommand.Execute(null);
-            }*/
+            DataContext = new ProductosViewModel();
         }
     }
 }

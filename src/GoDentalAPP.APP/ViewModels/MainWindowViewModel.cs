@@ -1,7 +1,10 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Controls;
 using System.Windows.Input;
 using GoDentalAPP.Helpers;
+using GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsProducto;
+
 
 namespace GoDentalAPP.ViewModels
 {
@@ -17,8 +20,9 @@ namespace GoDentalAPP.ViewModels
                 _currentView = value;
                 OnPropertyChanged();
 
-                // Si la vista actual es ProductosViewModel, cargar los datos automáticamente
-                if (value is ProductosViewModel productosViewModel)
+                // Si la vista actual contiene ProductosViewModel, cargar los datos
+                if (value is ContentControl contentControl &&
+                    contentControl.DataContext is ProductosViewModel productosViewModel)
                 {
                     productosViewModel.MostrarProductosCommand.Execute(null);
                 }
@@ -38,7 +42,14 @@ namespace GoDentalAPP.ViewModels
         public MainWindowViewModel()
         {
             // Inicializar comandos
-            MostrarProductosCommand = new RelayCommand(o => CurrentView = new ProductosViewModel()); 
+            // Inicializar comandos con la vista correcta
+            MostrarProductosCommand = new RelayCommand(o =>
+            {
+                CurrentView = new ProductosMainWindow() // Usamos el nombre de clase completo
+                {
+                    DataContext = new ProductosViewModel()
+                };
+            });
             ShowProveedoresCommand = new RelayCommand(o => CurrentView = new ProveedoresViewModel());
             ShowClientesCommand = new RelayCommand(o => CurrentView = new ClientesViewModel());
             ShowVentasCommand = new RelayCommand(o => CurrentView = new VentasViewModel());
@@ -49,7 +60,8 @@ namespace GoDentalAPP.ViewModels
             ShowCalendarioCommand = new RelayCommand(o => CurrentView = new CalendarioViewModel());
 
             // Vista inicial
-            CurrentView = new ProductosViewModel();
+            MostrarProductosCommand.Execute(null);
+            
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

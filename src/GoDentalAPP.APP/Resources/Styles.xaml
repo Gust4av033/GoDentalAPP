@@ -40,7 +40,19 @@
                 Value="14"/>
     </Style>
 
-    <!-- Button Styles -->
+    <Style TargetType="UserControl">
+        <Setter Property="Background"
+         Value="{StaticResource DarkBackgroundBrush}"/>
+        <Setter Property="Foreground"
+         Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="FontFamily"
+         Value="Segoe UI"/>
+        <Setter Property="FontSize"
+         Value="14"/>
+    </Style>
+
+
+        <!-- Button Styles -->
     <Style TargetType="Button">
         <Setter Property="Background"
                 Value="{StaticResource MediumBackgroundBrush}"/>
