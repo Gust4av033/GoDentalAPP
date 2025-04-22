@@ -7,11 +7,17 @@ namespace GoDentalAPP.Helpers
     {
         private readonly Action<object> _execute;
         private readonly Predicate<object> _canExecute;
+        private Action agregarDetalle;
 
         public RelayCommand(Action<object> execute, Predicate<object> canExecute = null)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
+        }
+
+        public RelayCommand(Action agregarDetalle)
+        {
+            this.agregarDetalle = agregarDetalle;
         }
 
         public bool CanExecute(object parameter)

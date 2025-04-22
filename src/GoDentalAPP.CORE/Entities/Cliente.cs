@@ -14,5 +14,6 @@ namespace GoDentalAPP.Core.Entities
 
         // Relación con Estado
         public Estado Estado { get; set; }
+        public string Nit { get; internal set; }
     }
 }

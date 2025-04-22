@@ -37,6 +37,12 @@ namespace GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Persistence
 
             builder.Property(i => i.CategoriaID)
                 .HasColumnType("int");
+
+            builder.Property(i => i.CodigoBarras)
+                .HasMaxLength(50);
+
+            builder.Property(i => i.TieneImpuesto)
+                .HasColumnType("bit");
         }
     }
 }

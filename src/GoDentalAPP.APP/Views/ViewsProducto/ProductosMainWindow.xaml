@@ -48,7 +48,10 @@
                 <DataGridTextColumn Header="Precio Unitario" Binding="{Binding PrecioUnitario, StringFormat=C}" />
                 <DataGridTextColumn Header="Cantidad en Stock" Binding="{Binding CantidadEnStock}" />
                 <DataGridTextColumn Header="Fecha Registro" Binding="{Binding FechaRegistro, StringFormat=yyyy-MM-dd}" />
-                <DataGridTextColumn Header="Fecha Vencimiento" Binding="{Binding FechaVencimiento, StringFormat=yyyy-MM-dd}" />
+                <DataGridTextColumn Header="Fecha Vencimiento" 
+                    Binding="{Binding FechaVencimiento, StringFormat=yyyy-MM-dd, TargetNullValue='-'}" />
+                <DataGridCheckBoxColumn Header="Impuestos"
+                        Binding="{Binding TieneImpuestos, TargetNullValue=False}" />
             </DataGrid.Columns>
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">

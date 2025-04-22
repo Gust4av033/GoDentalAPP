@@ -15,6 +15,8 @@ namespace GoDentalAPP.Infrastructure.Persistence
         public DbSet<User> Users { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<InsumoDental> InsumosDentales { get; set; }
+        public DbSet<Factura> Facturas { get; set; }
+        public DbSet<DetalleFactura> DetallesFactura { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

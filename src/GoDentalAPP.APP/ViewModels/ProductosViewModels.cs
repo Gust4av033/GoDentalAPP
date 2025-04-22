@@ -91,7 +91,8 @@ namespace GoDentalAPP.ViewModels
                 var productos = await _insumoRepository.GetInsumosDentalesAsync();
 
                 Productos = new ObservableCollection<InsumoDental>(productos);
-                TotalInventario = productos.Sum(p => p.PrecioUnitario * p.CantidadEnStock);
+                TotalInventario = productos.Sum(p => (p.PrecioUnitario * p.CantidadEnStock));
+
                 _productosOriginal = new ObservableCollection<InsumoDental>(productos);
                 Productos = new ObservableCollection<InsumoDental>(_productosOriginal);
 
@@ -105,7 +106,7 @@ namespace GoDentalAPP.ViewModels
                 Productos = new ObservableCollection<InsumoDental>
                 {
                     new InsumoDental
-                    {
+                    {   
                         NombreInsumo = "Error al cargar datos",
                         Descripcion = ex.Message
                     }
@@ -116,6 +117,7 @@ namespace GoDentalAPP.ViewModels
                 IsLoading = false;
             }
         }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
