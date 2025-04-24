@@ -1,5 +1,5 @@
-﻿using GoDentalAPP.Core.Entities;
-using GoDentalAPP.src.GoDentalAPP.CORE.Configuration;
+﻿using GoDentalAPP.src.GoDentalAPP.CORE.Configuration;
+using GoDentalAPP.src.GoDentalAPP.CORE.Entities;
 using GoDentalAPP.src.GoDentalAPP.CORE.Interfaces;
 using Microsoft.Extensions.Options;
 using System;

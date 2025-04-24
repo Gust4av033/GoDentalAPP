@@ -4,7 +4,6 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsProducto"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -47,11 +46,12 @@
                 <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" />
                 <DataGridTextColumn Header="Precio Unitario" Binding="{Binding PrecioUnitario, StringFormat=C}" />
                 <DataGridTextColumn Header="Cantidad en Stock" Binding="{Binding CantidadEnStock}" />
+                <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria.NombreCategoria}" />
                 <DataGridTextColumn Header="Fecha Registro" Binding="{Binding FechaRegistro, StringFormat=yyyy-MM-dd}" />
                 <DataGridTextColumn Header="Fecha Vencimiento" 
                     Binding="{Binding FechaVencimiento, StringFormat=yyyy-MM-dd, TargetNullValue='-'}" />
                 <DataGridCheckBoxColumn Header="Impuestos"
-                        Binding="{Binding TieneImpuestos, TargetNullValue=False}" />
+                        Binding="{Binding TieneImpuesto, Mode=TwoWay, TargetNullValue=False}" />
             </DataGrid.Columns>
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">

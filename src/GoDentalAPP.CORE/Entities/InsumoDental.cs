@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GoDentalAPP.Core.Entities
+namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
 {
     public class InsumoDental
     {
@@ -16,7 +16,7 @@ namespace GoDentalAPP.Core.Entities
         public string NombreInsumo { get; set; }
 
         [StringLength(500, ErrorMessage = "La descripción no puede exceder 500 caracteres")]
-        public string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
 
         [Required(ErrorMessage = "El precio unitario es obligatorio")]
         [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a 0")]
@@ -40,11 +40,18 @@ namespace GoDentalAPP.Core.Entities
 
         [ForeignKey("Categoria")]
         public int? CategoriaID { get; set; }
-        public string CodigoBarras { get; internal set; }
-        public bool TieneImpuesto { get; internal set; }
 
-        /*Propiedades de navegación (opcionales pero recomendadas)
-        public virtual Proveedor Proveedor { get; set; }
-        public virtual Categoria Categoria { get; set; }*/
+        // [ForeignKey("Impuesto")]
+        //public int? ImpuestoID { get; set; }
+
+        public string? CodigoBarras { get; set; }
+        public bool? TieneImpuesto { get; set; }
+
+       // Propiedades de navegación (opcionales pero recomendadas)
+        public virtual Proveedor? Proveedor { get; set; }
+        public virtual Categoria? Categoria { get; set; }
+
+        public string? NombreCategoria => Categoria.NombreCategoria; // agregar esta propiedad
+  
     }
 }

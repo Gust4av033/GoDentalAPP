@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using GoDentalAPP.Core.Entities;
 
-namespace GoDentalAPP.Core.Entities
+namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
 {
     public class Factura
     {

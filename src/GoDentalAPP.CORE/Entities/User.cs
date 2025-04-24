@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GoDentalAPP.Core.Entities
+namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
 {
     public class User
     {

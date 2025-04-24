@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GoDentalAPP.Core.Entities;
+using GoDentalAPP.src.GoDentalAPP.CORE.Entities;
 
 namespace GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios
 {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GoDentalAPP.Core.Entities
+namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
 {
     public class DetalleFactura
     {

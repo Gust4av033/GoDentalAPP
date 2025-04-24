@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using GoDentalAPP.Core.Entities;
+using GoDentalAPP.src.GoDentalAPP.CORE.Entities;
 
 namespace GoDentalAPP.Infrastructure.Persistence.Configurations
 {

@@ -21,10 +21,10 @@ namespace GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsProducto
     /// </summary>
     public partial class ProductosMainWindow : UserControl
     {
-        public ProductosMainWindow()
+        public ProductosMainWindow(ProductosViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = new ProductosViewModel();
+            DataContext = viewModel;
         }
     }
 }

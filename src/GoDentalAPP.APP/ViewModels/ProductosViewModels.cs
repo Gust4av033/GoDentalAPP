@@ -2,21 +2,24 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using GoDentalAPP.Core.Entities;
 using GoDentalAPP.Helpers;
 using GoDentalAPP.Infrastructure.Persistence;
 using System.Threading.Tasks;
 using System;
+using GoDentalAPP.src.GoDentalAPP.CORE.Entities;
 using GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Windows;
 
 namespace GoDentalAPP.ViewModels
 {
     public class ProductosViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<InsumoDental> _productos;
         private readonly IInsumoRepository _insumoRepository;
+        private ObservableCollection<InsumoDental> _productos;
+        private ObservableCollection<InsumoDental> _productosOriginal;
         private bool _isLoading;
+       
 
         public ObservableCollection<InsumoDental> Productos
         {
@@ -48,7 +51,6 @@ namespace GoDentalAPP.ViewModels
                 FiltrarProductos(); // se llama cada vez que se cambia el texto
             }
         }
-        private ObservableCollection<InsumoDental> _productosOriginal;
 
 
         public ICommand MostrarProductosCommand { get; }
@@ -61,21 +63,23 @@ namespace GoDentalAPP.ViewModels
         public ICommand AtrasCommand { get; }
         public ICommand ExportarCommand { get; }
 
-        public ProductosViewModel()
+
+        public ProductosViewModel(IInsumoRepository insumoRepository)
         {
-            // Inicializa el repositorio
-            _insumoRepository = new InsumoRepository(new AppDbContext());
-            ExportarCommand = new RelayCommand(o => ExportarAExcel());
-            AgregarCommand = new RelayCommand(AgregarProducto);
-            EditarCommand = new RelayCommand(EditarProducto);
-            EliminarCommand = new RelayCommand(EliminarProducto);
-            BuscarCommand = new RelayCommand(BuscarProducto);
-            GuardarCommand = new RelayCommand(GuardarCambios);
-            AtrasCommand = new RelayCommand(Atras);
+            _insumoRepository = insumoRepository;
 
             Productos = new ObservableCollection<InsumoDental>();
-            MostrarProductosCommand = new RelayCommand(async (param) => await MostrarProductosAsync());
-            RefreshCommand = new RelayCommand(async (param) => await MostrarProductosAsync());
+            _productosOriginal = new ObservableCollection<InsumoDental>();
+
+            MostrarProductosCommand = new RelayCommand(async _ => await MostrarProductosAsync());
+            RefreshCommand = new RelayCommand(async _ => await MostrarProductosAsync());
+            ExportarCommand = new RelayCommand(_ => ExportarAExcel());
+            AgregarCommand = new RelayCommand(_ => AgregarProducto());
+            EditarCommand = new RelayCommand(_ => EditarProducto());
+            EliminarCommand = new RelayCommand(_ => EliminarProducto());
+            BuscarCommand = new RelayCommand(_ => BuscarProducto());
+            GuardarCommand = new RelayCommand(_ => GuardarCambios());
+            AtrasCommand = new RelayCommand(_ => Atras());
 
             // Carga inicial
             _ = MostrarProductosAsync();
@@ -87,30 +91,25 @@ namespace GoDentalAPP.ViewModels
             try
             {
                 IsLoading = true;
-
                 var productos = await _insumoRepository.GetInsumosDentalesAsync();
 
-                Productos = new ObservableCollection<InsumoDental>(productos);
-                TotalInventario = productos.Sum(p => (p.PrecioUnitario * p.CantidadEnStock));
+                if (productos == null || !productos.Any())
+                {
+                    MessageBox.Show("No se encontraron insumos en la base de datos.", "Informaci贸n", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
 
-                _productosOriginal = new ObservableCollection<InsumoDental>(productos);
-                Productos = new ObservableCollection<InsumoDental>(_productosOriginal);
-
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Productos = new ObservableCollection<InsumoDental>(productos);
+                    _productosOriginal = new ObservableCollection<InsumoDental>(productos);
+                    TotalInventario = productos.Sum(p => p.PrecioUnitario * p.CantidadEnStock);
+                });
             }
             catch (Exception ex)
             {
-                // Manejo de errores (puedes implementar un servicio de logging)
-                Console.WriteLine($"Error al cargar productos: {ex.Message}");
-
-                // Opcional: mostrar mensaje al usuario
-                Productos = new ObservableCollection<InsumoDental>
-                {
-                    new InsumoDental
-                    {   
-                        NombreInsumo = "Error al cargar datos",
-                        Descripcion = ex.Message
-                    }
-                };
+                MessageBox.Show($"Error al cargar productos: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ocurri贸 un error: {ex.Message}\n{ex.StackTrace}");
             }
             finally
             {
@@ -134,8 +133,9 @@ namespace GoDentalAPP.ViewModels
             else
             {
                 var filtrados = _productosOriginal
-                    .Where(p => p.NombreInsumo.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase)
-                             || p.Descripcion.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase))
+                    .Where(p => p.NombreInsumo.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase) ||
+                               p.Descripcion?.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase) == true ||
+                               p.Categoria?.NombreCategoria?.Contains(TextoBusqueda, StringComparison.OrdinalIgnoreCase) == true)
                     .ToList();
 
                 Productos = new ObservableCollection<InsumoDental>(filtrados);
@@ -149,7 +149,7 @@ namespace GoDentalAPP.ViewModels
 
             // Encabezados
             worksheet.Cell(1, 1).Value = "Nombre";
-            worksheet.Cell(1, 2).Value = "Descripci髇";
+            worksheet.Cell(1, 2).Value = "Descripci锟絥";
             worksheet.Cell(1, 3).Value = "Precio";
             worksheet.Cell(1, 4).Value = "Stock";
 
@@ -164,15 +164,15 @@ namespace GoDentalAPP.ViewModels
 
             var ruta = "ProductosExportados.xlsx";
             workbook.SaveAs(ruta);
-            System.Diagnostics.Process.Start("explorer.exe", ruta); // abre el archivo autom醫icamente
+            System.Diagnostics.Process.Start("explorer.exe", ruta); // abre el archivo autom锟絫icamente
         }
 
 
-        private void AgregarProducto(object obj) { /* abrir modal, por ejemplo */ }
-        private void EditarProducto(object obj) { /* obtener seleccionado y editar */ }
-        private void EliminarProducto(object obj) { /* eliminar seleccionado */ }
-        private void BuscarProducto(object obj) { /* abrir b鷖queda o filtrar */ }
-        private void GuardarCambios(object obj) { /* guardar al repositorio */ }
-        private void Atras(object obj) { /* navegar hacia atr醩 */ }
+        private void AgregarProducto() { /* implementaci贸n */ }
+        private void EditarProducto() { /* implementaci贸n */ }
+        private void EliminarProducto() { /* implementaci贸n */ }
+        private void BuscarProducto() { /* implementaci贸n */ }
+        private void GuardarCambios() { /* implementaci贸n */ }
+        private void Atras() { /* implementaci贸n */ }
     }
 }

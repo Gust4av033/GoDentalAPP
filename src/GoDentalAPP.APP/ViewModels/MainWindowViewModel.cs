@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using GoDentalAPP.Helpers;
 using GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsProducto;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace GoDentalAPP.ViewModels
@@ -45,11 +46,10 @@ namespace GoDentalAPP.ViewModels
             // Inicializar comandos con la vista correcta
             MostrarProductosCommand = new RelayCommand(o =>
             {
-                CurrentView = new ProductosMainWindow() // Usamos el nombre de clase completo
-                {
-                    DataContext = new ProductosViewModel()
-                };
+                var productosView = App.ServiceProvider.GetRequiredService<ProductosMainWindow>();
+                CurrentView = productosView;
             });
+
             ShowProveedoresCommand = new RelayCommand(o => CurrentView = new ProveedoresViewModel());
             ShowClientesCommand = new RelayCommand(o => CurrentView = new ClientesViewModel());
             ShowVentasCommand = new RelayCommand(o => CurrentView = new VentasViewModel());

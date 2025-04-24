@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using GoDentalAPP.Infrastructure.Persistence;
 using BCrypt.Net;
-using GoDentalAPP.Core.Entities;
+using GoDentalAPP.src.GoDentalAPP.CORE.Entities;
 
 namespace GoDentalAPP.INFRAESTRUCTURE.Repositorios
 {

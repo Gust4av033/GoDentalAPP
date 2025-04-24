@@ -1,4 +1,4 @@
-﻿using GoDentalAPP.Core.Entities;
+﻿using GoDentalAPP.src.GoDentalAPP.CORE.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -43,6 +43,19 @@ namespace GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Persistence
 
             builder.Property(i => i.TieneImpuesto)
                 .HasColumnType("bit");
+
+
+            // Configuración de la relación con Categoría
+            builder.HasOne(i => i.Categoria)
+                  .WithMany(c => c.Insumos) // Asegúrate que Categoria tenga la colección Insumos
+                  .HasForeignKey(i => i.CategoriaID)
+                  .OnDelete(DeleteBehavior.Restrict); // O el comportamiento que prefieras
+
+            // Configuración de la relación con Proveedor
+            builder.HasOne(i => i.Proveedor)
+                   .WithMany(p => p.Insumos)
+                   .HasForeignKey(i => i.ProveedorID)
+                   .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

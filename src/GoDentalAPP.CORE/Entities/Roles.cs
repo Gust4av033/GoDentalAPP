@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using GoDentalAPP.src.GoDentalAPP.CORE.Entities;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations; // ¡Agrega esto!
 
 
-namespace GoDentalAPP.Core.Entities
+namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
 {
     public class Roles // Cambiado a public
     {

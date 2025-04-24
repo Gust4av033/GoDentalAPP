@@ -1,6 +1,6 @@
 using DevExpress.Utils.Design;
-using GoDentalAPP.Core.Entities;
 using GoDentalAPP.src.GoDentalAPP.CORE.Configuration;
+using GoDentalAPP.src.GoDentalAPP.CORE.Entities;
 using System;
 using System.Collections;
 using System.Net.Http;

@@ -1,18 +1,19 @@
-﻿using GoDentalAPP.Core.Entities;
-using GoDentalAPP.INFRAESTRUCTURE.Repositorios;
+﻿using GoDentalAPP.INFRAESTRUCTURE.Repositorios;
 using GoDentalAPP.Infrastructure.Persistence;
 using GoDentalAPP.Infrastructure.Services;
 using GoDentalAPP.src.GoDentalAPP.APP.Views.Login;
+using GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsProducto;
 using GoDentalAPP.src.GoDentalAPP.CORE.Configuration;
+using GoDentalAPP.src.GoDentalAPP.CORE.Interfaces;
 using GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios;
+using GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Services;
 using GoDentalAPP.ViewModels;
 using GoDentalAPP.Views.Login;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Configuration;
 using System.Windows;
-using GoDentalAPP.src.GoDentalAPP.CORE.Interfaces;
-using GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Services;
 using static GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios.IFacturaRepository;
 
 namespace GoDentalAPP
@@ -27,38 +28,12 @@ namespace GoDentalAPP
 
             var services = new ServiceCollection();
 
-            // 1. Configuración de DbContext
-            ConfigureDbContext(services);
-
-            // 2. Configuración de servicios de aplicación
-            ConfigureApplicationServices(services);
-
-            // 3. Registrar repositorios
-            ConfigureRepositories(services);
-
-            // 4. Registrar ViewModels
-            ConfigureViewModels(services);
-
-            // 5. Registrar vistas
-            ConfigureViews(services);
-
-            ServiceProvider = services.BuildServiceProvider();
-
-            // Iniciar con la ventana de login
-            var loginView = ServiceProvider.GetRequiredService<LoginView>();
-            loginView.Show();
-        }
-
-        private void ConfigureDbContext(IServiceCollection services)
-        {
+            // Configuración de DbContext
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(ConfigurationManager.ConnectionStrings["GoDentalAPP.Properties.Settings.Cconexion"].ConnectionString),
                 ServiceLifetime.Transient);
-        }
 
-        private void ConfigureApplicationServices(IServiceCollection services)
-        {
-            // Configurar DteSettings desde App.config
+            // Configuración de DteSettings desde App.config
             var dteSettings = new DteSettings
             {
                 ApiUrl = ConfigurationManager.AppSettings["DteSettings.ApiUrl"],
@@ -70,37 +45,37 @@ namespace GoDentalAPP
                 CodigoActividad = ConfigurationManager.AppSettings["DteSettings.CodigoActividad"]
             };
             services.AddSingleton(dteSettings);
-            
 
-            // Servicios de la aplicación
+            // Servicios
             services.AddScoped<IDteService, DteService>();
             services.AddScoped<IPdfService, PdfService>();
             services.AddScoped<IFacturacionService, FacturacionService>();
-        }
 
-        private void ConfigureRepositories(IServiceCollection services)
-        {
-            // Repositorios de datos
+            // Repositorios
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IInsumoRepository, InsumoRepository>();
             services.AddScoped<IClienteRepository, ClienteRepository>();
             services.AddScoped<IFacturaRepository, FacturaRepository>();
-        }
 
-        private void ConfigureViewModels(IServiceCollection services)
-        {
             // ViewModels
             services.AddTransient<LoginViewModel>();
             services.AddTransient<RegisterUserViewModel>();
             services.AddTransient<FacturacionViewModel>();
-        }
+            services.AddTransient<MainWindowViewModel>();
+            services.AddTransient<ProductosViewModel>();
 
-        private void ConfigureViews(IServiceCollection services)
-        {
             // Vistas
             services.AddTransient<LoginView>();
             services.AddTransient<MainWindow>();
             services.AddTransient<RDUsuario>();
+            services.AddTransient<ProductosMainWindow>();
+
+            // Construcción del proveedor de servicios
+            ServiceProvider = services.BuildServiceProvider();
+
+            // Iniciar con la ventana de login
+            var loginView = ServiceProvider.GetRequiredService<LoginView>();
+            loginView.Show();
         }
     }
 }

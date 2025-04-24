@@ -1,5 +1,4 @@
 // Archivo: src/GoDentalAPP.INFRAESTRUCTURE/Services/FacturacionService.cs
-using GoDentalAPP.Core.Entities;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
@@ -124,17 +123,17 @@ namespace GoDentalAPP.Infrastructure.Services
                     Codigo = d.Insumo.CodigoBarras,
                     Descripcion = d.Insumo.NombreInsumo,
                     PrecioUni = d.Precio,
-                    VentaGravada = d.Insumo.TieneImpuesto ? d.Total : 0,
-                    Tributos = d.Insumo.TieneImpuesto ? "20" : null,
-                    IvaItem = d.Insumo.TieneImpuesto ? d.Total * 0.13m : 0
+                    VentaGravada = (bool)d.Insumo.TieneImpuesto ? d.Total : 0,
+                    Tributos = (bool)d.Insumo.TieneImpuesto ? "20" :"",
+                    IvaItem = (bool)d.Insumo.TieneImpuesto ? d.Total * 0.13m : 0
                 }).ToList(),
                 Resumen = new Resumen
                 {
                     TotalGravada = factura.Detalles
-                        .Where(d => d.Insumo.TieneImpuesto)
+                        .Where(d => (bool)d.Insumo.TieneImpuesto)
                         .Sum(d => d.Total),
                     TotalExenta = factura.Detalles
-                        .Where(d => !d.Insumo.TieneImpuesto)
+                        .Where(d => (bool)!d.Insumo.TieneImpuesto)
                         .Sum(d => d.Total),
                     MontoTotalOperacion = factura.Detalles.Sum(d => d.Total),
                     TotalLetras = NumeroALetras(factura.Detalles.Sum(d => d.Total)),
