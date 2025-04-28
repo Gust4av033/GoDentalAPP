@@ -52,6 +52,8 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
         public virtual Categoria? Categoria { get; set; }
 
         public string? NombreCategoria => Categoria.NombreCategoria; // agregar esta propiedad
-  
+        public bool EsPocoStock => CantidadEnStock <= 5;
+
+
     }
 }

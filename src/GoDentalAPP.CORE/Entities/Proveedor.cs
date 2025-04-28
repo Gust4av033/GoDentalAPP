@@ -46,5 +46,10 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
 
         // Relación inversa con PedidosProveedores
         //public virtual ICollection<PedidoProveedor> Pedidos { get; set; }
+
+        public override string ToString()
+        {
+            return $"Proveedor: {NombreProveedor ?? "[NULL]"} (ID: {ProveedorID})";
+        }
     }
 }

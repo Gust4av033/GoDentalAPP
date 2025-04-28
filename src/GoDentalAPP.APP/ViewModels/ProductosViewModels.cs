@@ -10,16 +10,24 @@ using GoDentalAPP.src.GoDentalAPP.CORE.Entities;
 using GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Windows;
+using GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsProducto;
 
 namespace GoDentalAPP.ViewModels
 {
     public class ProductosViewModel : INotifyPropertyChanged
     {
         private readonly IInsumoRepository _insumoRepository;
+        private readonly ICategoriaRepository _categoriaRepository;
+        private readonly IProveedorRepository _proveedorRepository;
+
+
         private ObservableCollection<InsumoDental> _productos;
         private ObservableCollection<InsumoDental> _productosOriginal;
+        private ObservableCollection<Categoria> _categorias;
+        private ObservableCollection<Proveedor> _proveedores;
         private bool _isLoading;
-       
+
+
 
         public ObservableCollection<InsumoDental> Productos
         {
@@ -27,11 +35,50 @@ namespace GoDentalAPP.ViewModels
             set { _productos = value; OnPropertyChanged(); }
         }
 
+        private InsumoDental _insumoSeleccionado;
+        public InsumoDental InsumoSeleccionado
+        {
+            get => _insumoSeleccionado;
+            set { _insumoSeleccionado = value; OnPropertyChanged(); }
+        }
+
+
+        public ObservableCollection<Categoria> Categorias
+        {
+            get => _categorias;
+            set { _categorias = value; OnPropertyChanged(); }
+        }
+
+        public ObservableCollection<Proveedor> Proveedores
+        {
+            get => _proveedores;
+            set { _proveedores = value; OnPropertyChanged(); }
+        }
+
+        private string _precioUnitarioTexto;
+        public string PrecioUnitarioTexto
+        {
+            get => _precioUnitarioTexto;
+            set
+            {
+                _precioUnitarioTexto = value;
+                OnPropertyChanged();
+
+                if (decimal.TryParse(value, out var result))
+                {
+                    NuevoInsumo.PrecioUnitario = result;
+                }
+            }
+        }
+
+
         public bool IsLoading
         {
             get => _isLoading;
             set { _isLoading = value; OnPropertyChanged(); }
         }
+
+        public InsumoDental NuevoInsumo { get; set; }
 
         private decimal _totalInventario;
         public decimal TotalInventario
@@ -59,57 +106,95 @@ namespace GoDentalAPP.ViewModels
         public ICommand EditarCommand { get; }
         public ICommand EliminarCommand { get; }
         public ICommand BuscarCommand { get; }
-        public ICommand GuardarCommand { get; }
         public ICommand AtrasCommand { get; }
         public ICommand ExportarCommand { get; }
+        public ICommand GuardarCommand { get; }
 
 
-        public ProductosViewModel(IInsumoRepository insumoRepository)
+        public ProductosViewModel(IInsumoRepository insumoRepository, ICategoriaRepository categoriaRepository,
+            IProveedorRepository proveedorRepository)
         {
             _insumoRepository = insumoRepository;
+            _categoriaRepository = categoriaRepository;
+            _proveedorRepository = proveedorRepository;
 
+
+            NuevoInsumo = new InsumoDental();
             Productos = new ObservableCollection<InsumoDental>();
             _productosOriginal = new ObservableCollection<InsumoDental>();
+            Categorias = new ObservableCollection<Categoria>();
+            Proveedores = new ObservableCollection<Proveedor>();
 
             MostrarProductosCommand = new RelayCommand(async _ => await MostrarProductosAsync());
             RefreshCommand = new RelayCommand(async _ => await MostrarProductosAsync());
             ExportarCommand = new RelayCommand(_ => ExportarAExcel());
-            AgregarCommand = new RelayCommand(_ => AgregarProducto());
-            EditarCommand = new RelayCommand(_ => EditarProducto());
-            EliminarCommand = new RelayCommand(_ => EliminarProducto());
+            AgregarCommand = new RelayCommand(_ => AbrirVentanaAgregar());
+            EditarCommand = new RelayCommand(_ => AbrirVentanaEditar(InsumoSeleccionado));
+            EliminarCommand = new RelayCommand(_ => EliminarProducto(InsumoSeleccionado));
             BuscarCommand = new RelayCommand(_ => BuscarProducto());
-            GuardarCommand = new RelayCommand(_ => GuardarCambios());
+            GuardarCommand = new RelayCommand(async _ => await GuardarNuevoInsumoAsync());
             AtrasCommand = new RelayCommand(_ => Atras());
 
             // Carga inicial
             _ = MostrarProductosAsync();
         }
 
+        private async Task GuardarNuevoInsumoAsync()
+        {
+            try
+            {
+                if (NuevoInsumo.InsumoID == 0)
+                {
+                    // Agregar nuevo insumo
+                    await _insumoRepository.CreateInsumoDentalAsync(NuevoInsumo);
+                    MessageBox.Show("Insumo agregado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    // Editar insumo existente
+                    await _insumoRepository.UpdateInsumoDentalAsync(NuevoInsumo.InsumoID, NuevoInsumo);
+                    MessageBox.Show("Insumo editado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
+                await MostrarProductosAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar insumo: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
         private async Task MostrarProductosAsync()
         {
             try
             {
                 IsLoading = true;
-                var productos = await _insumoRepository.GetInsumosDentalesAsync();
 
-                if (productos == null || !productos.Any())
-                {
-                    MessageBox.Show("No se encontraron insumos en la base de datos.", "Información", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return;
-                }
+                // Cargar productos, categorías y proveedores en paralelo
+                var t1 = _insumoRepository.GetInsumosDentalesAsync();
+                var t2 = _categoriaRepository.GetAllAsync();
+                var t3 = _proveedorRepository.GetAllAsync();
+
+                await Task.WhenAll(t1, t2, t3);
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
+                    // Productos
+                    var productos = t1.Result;
                     Productos = new ObservableCollection<InsumoDental>(productos);
                     _productosOriginal = new ObservableCollection<InsumoDental>(productos);
                     TotalInventario = productos.Sum(p => p.PrecioUnitario * p.CantidadEnStock);
+
+                    // Categorías
+                    Categorias = new ObservableCollection<Categoria>(t2.Result);
+
+                    // Proveedores
+                    Proveedores = new ObservableCollection<Proveedor>(t3.Result);
                 });
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar productos: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                MessageBox.Show($"Ocurrió un error: {ex.Message}\n{ex.StackTrace}");
+                MessageBox.Show($"Error al cargar datos iniciales: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -167,10 +252,92 @@ namespace GoDentalAPP.ViewModels
             System.Diagnostics.Process.Start("explorer.exe", ruta); // abre el archivo autom�ticamente
         }
 
+        /*private void AgregarProducto()
+{
+    var agregarInsumoView = new AgregarInsumoView
+    {
+        DataContext = this // Pasamos el mismo ViewModel
+    };
 
-        private void AgregarProducto() { /* implementación */ }
-        private void EditarProducto() { /* implementación */ }
-        private void EliminarProducto() { /* implementación */ }
+    var window = new Window
+    {
+        Content = agregarInsumoView,
+        Title = "Agregar Insumo Dental",
+        SizeToContent = SizeToContent.WidthAndHeight,
+        WindowStartupLocation = WindowStartupLocation.CenterScreen
+    };
+
+    window.ShowDialog();
+}*/
+
+        
+        private async void EliminarProducto(InsumoDental insumoSeleccionado)
+        {
+            if (Productos.Count == 0 || Productos == null)
+            {
+                MessageBox.Show("No hay productos seleccionados para eliminar.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                var productoSeleccionado = InsumoSeleccionado; // Selección simulada
+                if (productoSeleccionado == null) return;
+
+                var confirmacion = MessageBox.Show($"¿Está seguro de eliminar el producto '{productoSeleccionado.NombreInsumo}'?", "Confirmación", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (confirmacion == MessageBoxResult.Yes)
+                {
+                    await _insumoRepository.DeleteInsumoDentalAsync(productoSeleccionado.InsumoID);
+                    MessageBox.Show("Producto eliminado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                    await MostrarProductosAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al eliminar producto: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void AbrirVentanaAgregar()
+        {
+            NuevoInsumo = new InsumoDental(); // Crear un nuevo insumo vacío
+            AbrirVentanaInsumo();
+        }
+
+        private void AbrirVentanaEditar(InsumoDental insumoSeleccionado)
+        {
+            if (insumoSeleccionado == null)
+            {
+                MessageBox.Show("Seleccione un insumo para editar.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            NuevoInsumo = insumoSeleccionado; // Cargar los datos del insumo seleccionado
+            PrecioUnitarioTexto = insumoSeleccionado.PrecioUnitario.ToString("F2"); // Formatear el precio
+            AbrirVentanaInsumo();
+        }
+
+        private void AbrirVentanaInsumo()
+        {
+            var agregarInsumoView = new AgregarInsumoView
+            {
+                DataContext = this // Pasamos el mismo ViewModel
+            };
+
+            var window = new Window
+            {
+                Content = agregarInsumoView,
+                Title = NuevoInsumo.InsumoID == 0 ? "Agregar Insumo Dental" : "Editar Insumo Dental",
+                SizeToContent = SizeToContent.WidthAndHeight,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+
+            window.ShowDialog();
+        }
+
+
+
+
         private void BuscarProducto() { /* implementación */ }
         private void GuardarCambios() { /* implementación */ }
         private void Atras() { /* implementación */ }

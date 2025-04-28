@@ -60,28 +60,39 @@ namespace GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios
 
         public async Task CreateInsumoDentalAsync(InsumoDental insumoDental)
         {
-            _context.InsumosDentales.Add(insumoDental);
-            await _context.SaveChangesAsync();
+            await _context.Database.ExecuteSqlRawAsync(
+                "EXEC [dbo].[AgregarProducto] @NombreInsumo = {0}, @Descripcion = {1}, @PrecioUnitario = {2}, @CantidadEnStock = {3}, @FechaVencimiento = {4}, @ProveedorID = {5}, @CategoriaID = {6}",
+                insumoDental.NombreInsumo,
+                insumoDental.Descripcion,
+                insumoDental.PrecioUnitario,
+                insumoDental.CantidadEnStock,
+                insumoDental.FechaVencimiento,
+                insumoDental.ProveedorID,
+                insumoDental.CategoriaID ?? (object)DBNull.Value // Manejar nulos
+            );
         }
 
         public async Task UpdateInsumoDentalAsync(int insumoId, InsumoDental insumoDental)
         {
-            var existingInsumo = await _context.InsumosDentales.FindAsync(insumoId);
-            if (existingInsumo != null)
-            {
-                _context.Entry(existingInsumo).CurrentValues.SetValues(insumoDental);
-                await _context.SaveChangesAsync();
-            }
+            await _context.Database.ExecuteSqlRawAsync(
+                "EXEC [dbo].[EditarProducto] @InsumoID = {0}, @NombreInsumo = {1}, @Descripcion = {2}, @PrecioUnitario = {3}, @CantidadEnStock = {4}, @FechaVencimiento = {5}, @ProveedorID = {6}, @CategoriaID = {7}",
+                insumoId,
+                insumoDental.NombreInsumo,
+                insumoDental.Descripcion,
+                insumoDental.PrecioUnitario,
+                insumoDental.CantidadEnStock,
+                insumoDental.FechaVencimiento,
+                insumoDental.ProveedorID,
+                insumoDental.CategoriaID ?? (object)DBNull.Value
+            );
         }
 
         public async Task DeleteInsumoDentalAsync(int id)
         {
-            var insumo = await _context.InsumosDentales.FindAsync(id);
-            if (insumo != null)
-            {
-                _context.InsumosDentales.Remove(insumo);
-                await _context.SaveChangesAsync();
-            }
+            await _context.Database.ExecuteSqlRawAsync(
+                "EXEC [dbo].[EliminarProducto] @InsumoID = {0}",
+                id
+            );
         }
 
         public async Task ActualizarStockInsumoAsync(int insumoId, int cantidadDelta)

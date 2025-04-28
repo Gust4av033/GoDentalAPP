@@ -4,6 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using GoDentalAPP.Helpers;
 using GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsProducto;
+using GoDentalAPP.src.GoDentalAPP.CORE.Interfaces;
+using GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios;
 using Microsoft.Extensions.DependencyInjection;
 
 
@@ -39,10 +41,10 @@ namespace GoDentalAPP.ViewModels
         public ICommand ShowCalculadoraCommand { get; }
         public ICommand ShowReportesCommand { get; }
         public ICommand ShowCalendarioCommand { get; }
+        public ICommand ShowFacturasCommand { get; } // Comando para mostrar la vista de facturas
 
         public MainWindowViewModel()
         {
-            // Inicializar comandos
             // Inicializar comandos con la vista correcta
             MostrarProductosCommand = new RelayCommand(o =>
             {
@@ -58,6 +60,13 @@ namespace GoDentalAPP.ViewModels
             ShowCalculadoraCommand = new RelayCommand(o => CurrentView = new CalculadoraViewModel());
             ShowReportesCommand = new RelayCommand(o => CurrentView = new ReportesViewModel());
             ShowCalendarioCommand = new RelayCommand(o => CurrentView = new CalendarioViewModel());
+            ShowFacturasCommand = new RelayCommand(o =>
+            {
+                var facturacionService = App.ServiceProvider.GetRequiredService<IFacturacionService>();
+                var clienteRepository = App.ServiceProvider.GetRequiredService<IClienteRepository>();
+                var insumoRepository = App.ServiceProvider.GetRequiredService<IInsumoRepository>();
+                CurrentView = new FacturacionViewModel(facturacionService, clienteRepository, insumoRepository);
+            });
 
             // Vista inicial
             MostrarProductosCommand.Execute(null);

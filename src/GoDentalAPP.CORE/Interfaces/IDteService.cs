@@ -1,8 +1,6 @@
-using DevExpress.Utils.Design;
 using GoDentalAPP.src.GoDentalAPP.CORE.Configuration;
 using GoDentalAPP.src.GoDentalAPP.CORE.Entities;
 using System;
-using System.Collections;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -12,24 +10,21 @@ using System.Threading.Tasks;
 
 namespace GoDentalAPP.src.GoDentalAPP.CORE.Interfaces
 {
-    public interface IDteService
-    {
-        Task<DteResponse> EnviarDte(DteData dte, string token);
-        Task<string> ObtenerTokenAutenticacion();
-    }
-
     public class DteService : IDteService
     {
         private readonly HttpClient _httpClient;
         private readonly DteSettings _settings;
 
-        public DteService(DteSettings settings)
+        // Constructor debe ser público
+        public DteService(HttpClient httpClient, DteSettings settings)
         {
-            _settings = settings;
-            _httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(_settings.ApiUrl)
-            };
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            
+            // Configuración adicional si es necesaria
+            _httpClient.DefaultRequestHeaders.Accept.Clear();
+            _httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         public async Task<DteResponse> EnviarDte(DteData dte, string token)
@@ -48,8 +43,7 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Interfaces
                 throw new Exception($"Error al enviar DTE: {error}");
             }
 
-            var result = await response.Content.ReadFromJsonAsync<DteResponse>();
-            return result;
+            return await response.Content.ReadFromJsonAsync<DteResponse>();
         }
 
         public async Task<string> ObtenerTokenAutenticacion()
@@ -68,15 +62,9 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Interfaces
             return result.Token;
         }
     }
-
-    public class DteResponse
+    public interface IDteService
     {
-        public string SelloRecibido { get; set; }
-        public string Estado { get; set; }
-    }
-
-    public class AuthResponse
-    {
-        public string Token { get; set; }
+        Task<DteResponse> EnviarDte(DteData dte, string token);
+        Task<string> ObtenerTokenAutenticacion();
     }
 }

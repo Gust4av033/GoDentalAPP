@@ -31,6 +31,8 @@
                     Style="{StaticResource MenuButtonStyle}" />
             <Button Content="Calendario" Command="{Binding ShowCalendarioCommand}" 
                     Style="{StaticResource MenuButtonStyle}" />
+            <Button Content="Facturas" Command="{Binding ShowFacturasCommand}"
+                    Style="{StaticResource MenuButtonStyle}" />
         </StackPanel>
 
         <!-- Contenido principal -->

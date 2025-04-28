@@ -19,5 +19,11 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
 
         // Opcional: relación inversa
         public virtual ICollection<InsumoDental> Insumos { get; set; }
+
+        public override string ToString()
+        {
+            return $"Categoria: {NombreCategoria ?? "[NULL]"} (ID: {CategoriaID})";
+        }
+
     }
 }

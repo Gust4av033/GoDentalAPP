@@ -37,19 +37,77 @@
         <!-- DataGrid -->
         <DataGrid Grid.Row="1" 
                   ItemsSource="{Binding Productos}"
+                  SelectedItem="{Binding InsumoSeleccionado}" 
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   IsReadOnly="True"
                   Margin="10">
+            
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Nombre" Binding="{Binding NombreInsumo}" />
-                <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" />
-                <DataGridTextColumn Header="Precio Unitario" Binding="{Binding PrecioUnitario, StringFormat=C}" />
-                <DataGridTextColumn Header="Cantidad en Stock" Binding="{Binding CantidadEnStock}" />
-                <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria.NombreCategoria}" />
-                <DataGridTextColumn Header="Fecha Registro" Binding="{Binding FechaRegistro, StringFormat=yyyy-MM-dd}" />
+                <DataGridTextColumn Header="Nombre" Binding="{Binding NombreInsumo}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Precio Unitario" Binding="{Binding PrecioUnitario, StringFormat=C}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Cantidad en Stock" Binding="{Binding CantidadEnStock}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria.NombreCategoria}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Fecha Registro" Binding="{Binding FechaRegistro, StringFormat=yyyy-MM-dd}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
                 <DataGridTextColumn Header="Fecha Vencimiento" 
-                    Binding="{Binding FechaVencimiento, StringFormat=yyyy-MM-dd, TargetNullValue='-'}" />
+                    Binding="{Binding FechaVencimiento, StringFormat=yyyy-MM-dd, TargetNullValue='-'}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
                 <DataGridCheckBoxColumn Header="Impuestos"
                         Binding="{Binding TieneImpuesto, Mode=TwoWay, TargetNullValue=False}" />
             </DataGrid.Columns>
@@ -60,16 +118,14 @@
                             <Setter Property="Background" Value="Red"/>
                             <Setter Property="Foreground" Value="White"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding CantidadEnStock}">
-                            <DataTrigger.Value>
-                                <sys:Int32>5</sys:Int32>
-                            </DataTrigger.Value>
+                        <DataTrigger Binding="{Binding EsPocoStock}" Value="True">
                             <Setter Property="Background" Value="Orange"/>
                             <Setter Property="Foreground" Value="Black"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </DataGrid.RowStyle>
+            
         </DataGrid>
 
         <!-- Action Buttons -->

@@ -1,5 +1,5 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:system="clr-namespace:System;assembly=netstandard">
     <!-- Color Resources -->
     <Color x:Key="DarkBackground">#1E1E1E</Color>
     <Color x:Key="MediumBackground">#252526</Color>
@@ -9,6 +9,16 @@
     <Color x:Key="AccentBlue">#3B78FF</Color>
     <Color x:Key="AccentGreen">#4CAF50</Color>
     <Color x:Key="BorderColor">#3F3F46</Color>
+    <Color x:Key="DisabledColor">#666666</Color>
+
+    <!-- Day Names Resources -->
+    <system:String x:Key="Local_FirstDay">Mon</system:String>
+    <system:String x:Key="Local_SecondDay">Tue</system:String>
+    <system:String x:Key="Local_ThirdDay">Wed</system:String>
+    <system:String x:Key="Local_FourthDay">Thu</system:String>
+    <system:String x:Key="Local_FifthDay">Fri</system:String>
+    <system:String x:Key="Local_SixthDay">Sat</system:String>
+    <system:String x:Key="Local_SeventhDay">Sun</system:String>
 
     <!-- Brush Resources -->
     <SolidColorBrush x:Key="DarkBackgroundBrush"
@@ -27,6 +37,8 @@
             Color="{StaticResource AccentGreen}"/>
     <SolidColorBrush x:Key="BorderBrush"
             Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="DisabledBrush"
+Color="{StaticResource DisabledColor}"/>    
 
     <!-- Window Style -->
     <Style TargetType="Window">
@@ -198,20 +210,84 @@
         </Setter>
     </Style>
 
-    <!-- ComboBox Style -->
+    <!-- Fixed ComboBox Style -->
     <Style TargetType="ComboBox">
-        <Setter Property="Background"
-                Value="{StaticResource MediumBackgroundBrush}"/>
-        <Setter Property="Foreground"
-                Value="{StaticResource TextPrimaryBrush}"/>
-        <Setter Property="BorderBrush"
-                Value="{StaticResource BorderBrush}"/>
-        <Setter Property="BorderThickness"
-                Value="1"/>
-        <Setter Property="Padding"
-                Value="8,5"/>
-        <Setter Property="Margin"
-                Value="5"/>
+        <Setter Property="Background" Value="{StaticResource MediumBackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="8,5"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <ToggleButton x:Name="ToggleButton"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Padding="{TemplateBinding Padding}"
+                                    IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          BorderThickness="{TemplateBinding BorderThickness}"
+                                          CornerRadius="4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <ContentPresenter Grid.Column="0"
+                                                          Margin="{TemplateBinding Padding}"
+                                                          HorizontalAlignment="Left"
+                                                          VerticalAlignment="Center"
+                                                          Content="{TemplateBinding Content}"/>
+                                            <Path Grid.Column="1" 
+                                                x:Name="Arrow"
+                                                Margin="0,0,8,0"
+                                                Fill="{StaticResource TextPrimaryBrush}"
+                                                Data="M0,0 L10,0 L5,5 Z"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource LightBackgroundBrush}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="BorderBrush" Value="{StaticResource AccentBlueBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                            <ContentPresenter ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                          Content="{TemplateBinding SelectionBoxItem}"
+                                          ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                          HorizontalAlignment="Left"
+                                          VerticalAlignment="Center"/>
+                        </ToggleButton>
+                        <Popup x:Name="PART_Popup"
+                             AllowsTransparency="True"
+                             IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                             Placement="Bottom"
+                             PopupAnimation="Slide">
+                            <Border Background="{StaticResource MediumBackgroundBrush}"
+                                  BorderBrush="{StaticResource BorderBrush}"
+                                  BorderThickness="1"
+                                  CornerRadius="0,0,4,4"
+                                  Margin="0,1,0,0">
+                                <ScrollViewer MaxHeight="{TemplateBinding MaxDropDownHeight}" VerticalScrollBarVisibility="Auto">
+                                    <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!-- Label Style -->
@@ -274,30 +350,25 @@
     </Style>
 
     <Style TargetType="DataGridCell">
-        <Setter Property="Padding"
-                Value="10,5"/>
-        <Setter Property="BorderThickness"
-                Value="0"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="DataGridCell">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                        <ContentPresenter VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsSelected"
-                    Value="True">
-                <Setter Property="Background"
-                        Value="{StaticResource AccentBlueBrush}"/>
-                <Setter Property="Foreground"
-                        Value="{StaticResource TextPrimaryBrush}"/>
-            </Trigger>
-        </Style.Triggers>
+       <Setter Property="Padding" Value="10,5"/>
+       <Setter Property="BorderThickness" Value="0"/>
+       <Setter Property="Template">
+           <Setter.Value>
+               <ControlTemplate TargetType="DataGridCell">
+                   <Border Background="{TemplateBinding Background}"
+                           BorderBrush="{TemplateBinding BorderBrush}"
+                           BorderThickness="{TemplateBinding BorderThickness}">
+                       <ContentPresenter VerticalAlignment="Center"/>
+                   </Border>
+               </ControlTemplate>
+           </Setter.Value>
+       </Setter>
+       <Style.Triggers>
+           <Trigger Property="Selector.IsSelected" Value="True">
+               <Setter Property="Background" Value="{StaticResource AccentBlueBrush}"/>
+               <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+           </Trigger>
+       </Style.Triggers>
     </Style>
 
     <!-- Scrollbar Styles -->
@@ -325,24 +396,17 @@
     </Style>
 
     <Style TargetType="ListViewItem">
-        <Setter Property="Padding"
-                Value="10,8"/>
-        <Setter Property="HorizontalContentAlignment"
-                Value="Stretch"/>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver"
-                    Value="True">
-                <Setter Property="Background"
-                        Value="{StaticResource LightBackgroundBrush}"/>
-            </Trigger>
-            <Trigger Property="IsSelected"
-                    Value="True">
-                <Setter Property="Background"
-                        Value="{StaticResource AccentBlueBrush}"/>
-                <Setter Property="Foreground"
-                        Value="{StaticResource TextPrimaryBrush}"/>
-            </Trigger>
-        </Style.Triggers>
+       <Setter Property="Padding" Value="10,8"/>
+       <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+       <Style.Triggers>
+           <Trigger Property="IsMouseOver" Value="True">
+               <Setter Property="Background" Value="{StaticResource LightBackgroundBrush}"/>
+           </Trigger>
+           <Trigger Property="Selector.IsSelected" Value="True">
+               <Setter Property="Background" Value="{StaticResource AccentBlueBrush}"/>
+               <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+           </Trigger>
+       </Style.Triggers>
     </Style>
 
     <!-- TabControl Styles -->
@@ -417,6 +481,430 @@
                             <Setter Property="BorderBrush"
                                     Value="{StaticResource AccentGreenBrush}"/>
                         </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- DatePicker Style -->
+    <Style TargetType="DatePicker">
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="Background" Value="{StaticResource MediumBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="CalendarStyle" Value="{DynamicResource DatePickerCalendarStyle}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePicker">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="PART_Button"
+                            Grid.Column="1"
+                            Focusable="False"
+                            HorizontalAlignment="Right"
+                            Margin="3,0,3,0"
+                            VerticalAlignment="Center"
+                            Width="20"
+                            Height="20">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid>
+                                        <Path Fill="{StaticResource TextPrimaryBrush}" 
+                                          Data="M8,12 L12,16 L16,12 M16,20 L16,21 L8,21 L8,20 M16,4 L16,8 L8,8 L8,4 M22,5.5 L22,19.5 C22,20.881 20.881,22 19.5,22 L4.5,22 C3.119,22 2,20.881 2,19.5 L2,5.5 C2,4.119 3.119,3 4.5,3 L19.5,3 C20.881,3 22,4.119 22,5.5 Z" 
+                                          Stretch="Uniform"/>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <DatePickerTextBox x:Name="PART_TextBox"
+                                      Grid.Column="0"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      Padding="{TemplateBinding Padding}"
+                                      VerticalContentAlignment="Center"
+                                      HorizontalAlignment="Stretch"
+                                      HorizontalContentAlignment="Left"
+                                      VerticalAlignment="Center"/>
+                        <Popup x:Name="PART_Popup" 
+                         StaysOpen="False"
+                         AllowsTransparency="True"
+                         PlacementTarget="{Binding ElementName=PART_Button}" 
+                         Placement="Bottom">
+                            <Border BorderBrush="{StaticResource BorderBrush}"
+                              BorderThickness="1"
+                              Background="{StaticResource DarkBackgroundBrush}"
+                              CornerRadius="0 0 4 4"
+                              Padding="0">
+                                <Calendar x:Name="PART_Calendar"
+                                     Style="{DynamicResource DatePickerCalendarStyle}"
+                                     Background="{StaticResource DarkBackgroundBrush}"
+                                     BorderBrush="{StaticResource BorderBrush}"
+                                     Foreground="{StaticResource TextPrimaryBrush}"
+                                     BorderThickness="0"/>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" Value="{StaticResource AccentBlueBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter Property="BorderBrush" Value="{StaticResource AccentGreenBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- DatePickerTextBox Style -->
+    <Style TargetType="DatePickerTextBox">
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="Background" Value="{StaticResource MediumBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="8,5"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePickerTextBox">
+                    <Grid>
+                        <Border Background="{TemplateBinding Background}" 
+                          BorderBrush="{TemplateBinding BorderBrush}" 
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          CornerRadius="4">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                    Foreground="{TemplateBinding Foreground}"
+                                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Calendar Style -->
+    <Style x:Key="DatePickerCalendarStyle" TargetType="Calendar">
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="Background" Value="{StaticResource DarkBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Calendar">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                       BorderThickness="{TemplateBinding BorderThickness}" 
+                       Background="{TemplateBinding Background}" 
+                       CornerRadius="4">
+                        <Grid Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <CalendarItem x:Name="PART_CalendarItem" 
+                                     Background="{TemplateBinding Background}"
+                                     BorderBrush="{TemplateBinding BorderBrush}"
+                                     BorderThickness="0"
+                                     Grid.Row="1"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- CalendarItem Style -->
+    <Style TargetType="CalendarItem">
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CalendarItem">
+                    <Grid x:Name="PART_Root">
+                        <Grid.Resources>
+                            <SolidColorBrush x:Key="CalendarButtonBackground" Color="Transparent"/>
+                        </Grid.Resources>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <!-- Header -->
+                        <Grid Grid.Row="0"
+                          HorizontalAlignment="Stretch"
+                          Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="PART_PreviousButton"
+                               Grid.Column="0"
+                               Width="28"
+                               Height="28"
+                               HorizontalAlignment="Left"
+                               Margin="2"
+                               Focusable="False">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Grid Background="Transparent">
+                                            <Path Data="M15,18L9,12L15,6"
+                                            Stroke="{StaticResource TextPrimaryBrush}"
+                                            StrokeThickness="2"
+                                            Stretch="Uniform"
+                                            Width="10"
+                                            Height="10"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button x:Name="PART_HeaderButton"
+                               Grid.Column="1"
+                               Margin="0,5"
+                               Focusable="False"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <TextBlock Text="{TemplateBinding Content}"
+                                             Foreground="{StaticResource TextPrimaryBrush}"
+                                             FontWeight="Bold"
+                                             FontSize="14"/>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button x:Name="PART_NextButton"
+                               Grid.Column="2"
+                               Width="28"
+                               Height="28"
+                               HorizontalAlignment="Right"
+                               Margin="2"
+                               Focusable="False">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Grid Background="Transparent">
+                                            <Path Data="M9,18L15,12L9,6"
+                                            Stroke="{StaticResource TextPrimaryBrush}"
+                                            StrokeThickness="2"
+                                            Stretch="Uniform"
+                                            Width="10"
+                                            Height="10"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+
+                        <!-- Day of Week Headers -->
+                        <Grid Grid.Row="1" HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" 
+                                  Text="{DynamicResource Local_FirstDay}" 
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" 
+                                  Margin="5"
+                                  Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Grid.Column="1" 
+                                  Text="{DynamicResource Local_SecondDay}" 
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" 
+                                  Margin="5"
+                                  Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Grid.Column="2" 
+                                  Text="{DynamicResource Local_ThirdDay}" 
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" 
+                                  Margin="5"
+                                  Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Grid.Column="3" 
+                                  Text="{DynamicResource Local_FourthDay}" 
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" 
+                                  Margin="5"
+                                  Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Grid.Column="4" 
+                                  Text="{DynamicResource Local_FifthDay}" 
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" 
+                                  Margin="5"
+                                  Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Grid.Column="5" 
+                                  Text="{DynamicResource Local_SixthDay}" 
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" 
+                                  Margin="5"
+                                  Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Grid.Column="6" 
+                                  Text="{DynamicResource Local_SeventhDay}" 
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" 
+                                  Margin="5"
+                                  Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </Grid>
+
+                        <!-- Month View -->
+                        <Grid x:Name="PART_MonthView" Grid.Row="2" Visibility="Visible" HorizontalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+
+                        <!-- Year View -->
+                        <Grid x:Name="PART_YearView" Grid.Row="2" Visibility="Hidden">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+
+                        <!-- Decade View -->
+                        <Grid x:Name="PART_DecadeView" Grid.Row="2" Visibility="Hidden">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- CalendarButton Style (Day buttons) -->
+    <Style TargetType="CalendarButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="MinWidth" Value="35"/>
+        <Setter Property="MinHeight" Value="35"/>
+        <Setter Property="Margin" Value="1"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CalendarButton">
+                    <Grid>
+                        <Border x:Name="ButtonBackground"
+                           Background="{TemplateBinding Background}" 
+                           CornerRadius="5">
+                            <ContentPresenter x:Name="ButtonContent" 
+                                         Content="{TemplateBinding Content}" 
+                                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ButtonBackground" Property="Background" Value="{StaticResource LightBackgroundBrush}"/>
+                        </Trigger>
+                        <Trigger Property="Selector.IsSelected" Value="True">
+                            <Setter TargetName="ButtonBackground" Property="Background" Value="{StaticResource AccentBlueBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsInactive" Value="True">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- CalendarDayButton Style (for days of the month) -->
+    <Style TargetType="CalendarDayButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="MinWidth" Value="35"/>
+        <Setter Property="MinHeight" Value="35"/>
+        <Setter Property="Margin" Value="1"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CalendarDayButton">
+                    <Grid>
+                        <Border x:Name="ButtonBackground"
+                           Background="{TemplateBinding Background}" 
+                           CornerRadius="5">
+                            <ContentPresenter x:Name="ButtonContent" 
+                                         Content="{TemplateBinding Content}" 
+                                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ButtonBackground" Property="Background" Value="{StaticResource LightBackgroundBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="ButtonBackground" Property="Background" Value="{StaticResource AccentBlueBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsToday" Value="True">
+                            <Setter TargetName="ButtonBackground" Property="BorderBrush" Value="{StaticResource AccentGreenBrush}"/>
+                            <Setter TargetName="ButtonBackground" Property="BorderThickness" Value="2"/>
+                        </Trigger>
+                        <Trigger Property="IsBlackedOut" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource DisabledBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsInactive" Value="True">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True"/>
+                                <Condition Property="IsBlackedOut" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ButtonBackground" Property="Background" Value="{StaticResource BorderBrush}"/>
+                            <Setter Property="Foreground" Value="{StaticResource DisabledBrush}"/>
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

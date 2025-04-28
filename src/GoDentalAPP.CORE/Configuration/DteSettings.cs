@@ -16,4 +16,19 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Configuration
         public string NombreEmpresa { get; set; }
         public string CodigoActividad { get; set; }
     }
+    public class DteResponse
+    {
+        public string SelloRecibido { get; set; }
+        public string Estado { get; set; }
+        public string CodigoGeneracion { get; set; }
+        public string NumeroControl { get; set; }
+        public DateTime FechaHoraCertificacion { get; set; }
+    }
+
+    public class AuthResponse
+    {
+        public string Token { get; set; }
+        public DateTime Expira { get; set; }
+        public string Mensaje { get; set; }
+    }
 }
