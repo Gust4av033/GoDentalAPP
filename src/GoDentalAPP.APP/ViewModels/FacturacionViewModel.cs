@@ -12,6 +12,16 @@ namespace GoDentalAPP.ViewModels
 {
     public class FacturacionViewModel : BaseViewModel
     {
+
+        private bool _modoOffline;
+        public bool ModoOffline{
+        get => _modoOffline;
+        set
+        {
+            SetProperty(ref _modoOffline, value);
+            ActualizarEstadoConexion();
+        }
+    }
         // Repositorios y servicios
         private readonly IFacturacionService _facturacionService;
         private readonly IClienteRepository _clienteRepository;
@@ -21,6 +31,9 @@ namespace GoDentalAPP.ViewModels
         public ObservableCollection<Cliente> Clientes { get; set; }
         public ObservableCollection<InsumoDental> Insumos { get; set; }
         public ObservableCollection<DetalleFacturaDto> Detalles { get; set; }
+        public ObservableCollection<Factura> Facturas { get; set; }
+        
+
 
         // Factura actual
 
@@ -30,6 +43,19 @@ namespace GoDentalAPP.ViewModels
         public ICommand AgregarDetalleCommand { get; }
         public ICommand GenerarFacturaCommand { get; }
         public ICommand GenerarCreditoFiscalCommand { get; }
+        public ICommand BuscarFacturasCommand { get; }
+        public ICommand LimpiarFiltrosCommand { get; }
+        public ICommand VerFacturaCommand { get; }
+        public ICommand GenerarPdfCommand { get; }
+        public ICommand SincronizarCommand { get; }
+
+        private Cliente _clienteSeleccionadoFiltro;
+        public Cliente ClienteSeleccionadoFiltro
+        {
+            get => _clienteSeleccionadoFiltro;
+            set => SetProperty(ref _clienteSeleccionadoFiltro, value);
+        }
+
 
         // Constructor
         public FacturacionViewModel(
@@ -91,5 +117,19 @@ namespace GoDentalAPP.ViewModels
             var factura = await _facturacionService.CrearCreditoFiscal(FacturaActual);
             // Mostrar resultado al usuario
         }
+
+        // Método para actualizar el estado de conexión
+        private void ActualizarEstadoConexion()
+        {
+            if (ModoOffline)
+            {
+                // Implementar lógica para modo offline
+            }
+            else
+            {
+                // Implementar lógica para modo online
+            }
+        }
+
     }
 }

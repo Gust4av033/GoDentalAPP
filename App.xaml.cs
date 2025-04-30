@@ -8,7 +8,6 @@ using GoDentalAPP.src.GoDentalAPP.CORE.Interfaces;
 using GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios;
 using GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Services;
 using GoDentalAPP.ViewModels;
-using GoDentalAPP.Views.Login;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -17,6 +16,8 @@ using System.Windows;
 using Microsoft.Extensions.Http;
 using static GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios.IFacturaRepository;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Hosting;
+using GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Services;
 
 
 namespace GoDentalAPP
@@ -64,7 +65,7 @@ namespace GoDentalAPP
             // Otros servicios
             services.AddScoped<IPdfService, PdfService>();
             services.AddScoped<IFacturacionService, FacturacionService>();
-
+            
             // Repositorios
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IInsumoRepository, InsumoRepository>();
@@ -72,6 +73,10 @@ namespace GoDentalAPP
             services.AddScoped<IFacturaRepository, FacturaRepository>();
             services.AddScoped<ICategoriaRepository, CategoriaRepository>();
             services.AddScoped<IProveedorRepository, ProveedorRepository>();
+
+            //Otros servicios
+            services.AddHostedService<SincronizacionService>(); // servicio de sincronización 
+
 
             // ViewModels
             services.AddTransient<LoginViewModel>();

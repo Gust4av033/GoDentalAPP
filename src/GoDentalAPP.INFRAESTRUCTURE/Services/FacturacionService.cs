@@ -1,4 +1,3 @@
-// Archivo: src/GoDentalAPP.INFRAESTRUCTURE/Services/FacturacionService.cs
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
@@ -8,11 +7,14 @@ using GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios;
 using System.Text.Json;
 using GoDentalAPP.src.GoDentalAPP.CORE.Entities;
 using GoDentalAPP.src.GoDentalAPP.CORE.Configuration;
+using GoDentalAPP.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace GoDentalAPP.Infrastructure.Services
 {
     public class FacturacionService : IFacturacionService
     {
+        private readonly AppDbContext _context;
         private readonly IFacturaRepository _facturaRepo;
         private readonly IDteService _dteService;
         private readonly IPdfService _pdfService;
@@ -162,5 +164,69 @@ namespace GoDentalAPP.Infrastructure.Services
             return "SON: " + numero.ToString("N2") + " DÓLARES";
         }
 
+        // Implementación CORREGIDA del método de sincronización
+        public async Task<ResultadoSincronizacion> SincronizarFactura(Factura factura)
+        {
+            var resultado = new ResultadoSincronizacion();
+
+            try
+            {
+                // 1. Verificar si la factura existe
+                var facturaExistente = await _context.Facturas
+                    .FirstOrDefaultAsync(f => f.FacturaID == factura.FacturaID);
+
+                if (facturaExistente == null)
+                {
+                    resultado.Exitoso = false;
+                    resultado.MensajeError = "Factura no encontrada";
+                    return resultado;
+                }
+
+                // 2. Lógica de sincronización con MH (ejemplo)
+                var respuestaMH = await SimularEnvioMH(facturaExistente);
+
+                if (respuestaMH.Exito)
+                {
+                    // 3. Actualizar estado de la factura
+                    facturaExistente.Sincronizada = true;
+                    facturaExistente.FechaSincronizacion = DateTime.Now;
+                    facturaExistente.CodigoMH = respuestaMH.CodigoRespuesta;
+
+                    await _context.SaveChangesAsync();
+
+                    resultado.Exitoso = true;
+                }
+                else
+                {
+                    resultado.Exitoso = false;
+                    resultado.MensajeError = respuestaMH.MensajeError;
+                }
+            }
+            catch (Exception ex)
+            {
+                resultado.Exitoso = false;
+                resultado.MensajeError = $"Error al sincronizar: {ex.Message}";
+            }
+
+            return resultado;
+        }
+
+        // Método auxiliar para simular envío al MH
+        private async Task<(bool Exito, string CodigoRespuesta, string MensajeError)> SimularEnvioMH(Factura factura)
+        {
+            // Simular tiempo de espera
+            await Task.Delay(1000);
+
+            // Simular respuesta exitosa en el 80% de los casos
+            if (new Random().Next(0, 100) < 80)
+            {
+                return (true, "MH-" + DateTime.Now.Ticks.ToString(), null);
+            }
+
+            return (false, null, "Error simulado del servicio MH");
+        }
     }
 }
+
+
+    

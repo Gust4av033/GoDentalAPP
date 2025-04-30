@@ -5,13 +5,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GoDentalAPP.src.GoDentalAPP.APP.Views.Login"
-        xmlns:converters="clr-namespace:GoDentalAPP.APP.Converters"
         mc:Ignorable="d"
         Title="Registro de Usuario" Height="575" Width="400"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
-        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
 
     <Grid Margin="20">

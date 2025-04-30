@@ -1,13 +1,15 @@
 ﻿<Application x:Class="GoDentalAPP.App"
-            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            xmlns:local="clr-namespace:GoDentalAPP">
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:local="clr-namespace:GoDentalAPP"
+            xmlns:converters="clr-namespace:GoDentalAPP.src.GoDentalAPP.APP.DTOs">
     <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <!-- Corrected the assembly name to match the actual project name -->
-                <ResourceDictionary Source="/src/GoDentalAPP.APP/Resources/Styles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Application.Resources>
+       <ResourceDictionary>
+           <ResourceDictionary.MergedDictionaries>
+               <ResourceDictionary Source="/src/GoDentalAPP.APP/Resources/Styles.xaml" />
+           </ResourceDictionary.MergedDictionaries>
+            
+           
+          </ResourceDictionary>
+   </Application.Resources>
 </Application>

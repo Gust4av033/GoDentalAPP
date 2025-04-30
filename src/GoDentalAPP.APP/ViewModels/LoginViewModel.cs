@@ -5,7 +5,6 @@ using System.Windows.Input;
 using GoDentalAPP.Helpers;
 using GoDentalAPP.INFRAESTRUCTURE.Repositorios;
 using GoDentalAPP.src.GoDentalAPP.APP.Views.Login;
-using GoDentalAPP.Views.Login;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GoDentalAPP.ViewModels

@@ -1,12 +1,15 @@
-﻿<Window x:Class="GoDentalAPP.Views.Login.LoginView"
+﻿<Window x:Class="GoDentalAPP.src.GoDentalAPP.APP.Views.Login.LoginView"
         Style="{StaticResource {x:Type Window}}"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:GoDentalAPP.APP.Converters"
+        xmlns:conv="clr-namespace:System.Windows;assembly=PresentationFramework"
         Title="Inicio de Sesión" Height="475" Width="375" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+
     <Window.Resources>
-        <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <!-- Usa el BooleanToVisibilityConverter incorporado de WPF -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Window.Resources>
+
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

@@ -48,6 +48,14 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
         public string PdfBase64 { get; set; }
 
         public int ClienteId { get; set; }
+//propiedades para guardar factura offline
+        public string Serie { get; set; }
+        public bool EsOffline { get; set; }
+        public bool Sincronizada { get; set; }
+        public string RutaPdfLocal { get; set; }
+        public string SerieOffline { get; set; }
+        public DateTime FechaSincronizacion { get; set; }
+        public string CodigoMH { get; set; }
 
         // Propiedades de navegación
         // public virtual TipoPago TipoPago { get; set; }

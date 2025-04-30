@@ -16,6 +16,8 @@ namespace GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios
         Task<int> CrearFactura(Factura factura);
         Task<Factura> ObtenerFacturaPorId(int id);
         Task<bool> ActualizarEstadoDte(int facturaId, string estado, string selloRecibido = null);
+        Task<List<Factura>> BuscarFacturas(int? clienteId = null, string estado = null);
+        Task<List<Factura>> ObtenerFacturasPendientesSincronizacion();
         Task ActualizarFactura(Factura factura);
 
         public class FacturaRepository : IFacturaRepository
@@ -66,6 +68,16 @@ namespace GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios
             }
 
             public Task ActualizarFactura(Factura factura)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<List<Factura>> BuscarFacturas(int? clienteId = null, string estado = null)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<List<Factura>> ObtenerFacturasPendientesSincronizacion()
             {
                 throw new NotImplementedException();
             }

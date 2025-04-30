@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GoDentalAPP.src.GoDentalAPP.APP.Converters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,13 @@ namespace GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsFacturacion
         public FacturaView()
         {
             InitializeComponent();
+
+            // Agrega el converter a los recursos del UserControl
+            this.Resources.Add("BooleanToStringConverter", new BooleanToStringConverter()
+            {
+                TrueText = "ONLINE",
+                FalseText = "OFFLINE"
+            });
         }
     }
 }

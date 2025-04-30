@@ -11,5 +11,12 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Interfaces
     {
         Task<Factura> CrearFacturaNormal(FacturaDto facturaDto);
         Task<Factura> CrearCreditoFiscal(FacturaDto facturaDto);
+        Task<ResultadoSincronizacion> SincronizarFactura(Factura factura);
+    }
+
+    public class ResultadoSincronizacion
+    {
+        public bool Exitoso { get; set; }
+        public string MensajeError { get; set; }
     }
 }
