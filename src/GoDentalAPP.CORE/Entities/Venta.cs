@@ -9,33 +9,28 @@ using System.Threading.Tasks;
 
 namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
 {
-    public class PedidoProveedor
+    public class Venta
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PedidoID { get; set; }
+        public int VentaID { get; set; }
 
-        [ForeignKey("Proveedor")]
-        public int? ProveedorID { get; set; }
+        [ForeignKey("Cliente")]
+        public int? ClienteID { get; set; }
 
-        public DateTime FechaPedido { get; set; } = DateTime.Now;
-
-        public DateTime? FechaEntrega { get; set; }
+        public DateTime FechaVenta { get; set; } = DateTime.Now;
 
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
-        public decimal TotalPedido { get; set; }
+        public decimal TotalVenta { get; set; }
 
         [ForeignKey("Usuario")]
         public int? UsuarioID { get; set; }
 
-        [ForeignKey("Estado")]
-        public int? EstadoID { get; set; }
-
         // Navigation properties
-        public virtual Proveedor Proveedor { get; set; }
+        public virtual Cliente Cliente { get; set; }
         public virtual User Usuario { get; set; }
-        public virtual Estado Estado { get; set; }
-        public virtual ICollection<DetallePedidoProveedor> Detalles { get; set; }
+        public virtual ICollection<DetalleVenta> Detalles { get; set; }
+        public virtual ICollection<Factura> Facturas { get; set; }
     }
 }

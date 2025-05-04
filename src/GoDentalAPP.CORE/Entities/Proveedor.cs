@@ -44,8 +44,8 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
         // Relación inversa con InsumosDentales
         public virtual ICollection<InsumoDental> Insumos { get; set; }
 
-        // Relación inversa con PedidosProveedores
-        //public virtual ICollection<PedidoProveedor> Pedidos { get; set; }
+        //Relación inversa con PedidosProveedores
+        public virtual ICollection<PedidoProveedor> Pedidos { get; set; }
 
         public override string ToString()
         {

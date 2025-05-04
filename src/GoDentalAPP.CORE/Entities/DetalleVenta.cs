@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
 {
-    public class DetalleFactura
+    public class DetalleVenta
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int DetalleFacturaID { get; set; }
+        public int DetalleVentaID { get; set; }
 
-        [ForeignKey("Factura")]
-        public int FacturaID { get; set; }
+        [ForeignKey("Venta")]
+        public int? VentaID { get; set; }
 
         [ForeignKey("InsumoDental")]
         public int? InsumoID { get; set; }
@@ -29,23 +29,20 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
 
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
-        public decimal Subtotal { get; set; }
+        public decimal Total { get; set; }
 
         [ForeignKey("Impuesto")]
         public int? ImpuestoID { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(10, 2)")]
-        public decimal MontoImpuesto { get; set; }
+        public decimal? Subtotal { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(10, 2)")]
-        public decimal Total { get; set; }
+        public decimal? MontoImpuesto { get; set; }
 
         // Navigation properties
-        public virtual Factura Factura { get; set; }
+        public virtual Venta Venta { get; set; }
         public virtual InsumoDental InsumoDental { get; set; }
         public virtual Impuesto Impuesto { get; set; }
-
     }
 }

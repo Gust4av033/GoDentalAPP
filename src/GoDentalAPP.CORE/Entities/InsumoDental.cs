@@ -41,13 +41,13 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
         [ForeignKey("Categoria")]
         public int? CategoriaID { get; set; }
 
-        // [ForeignKey("Impuesto")]
-        //public int? ImpuestoID { get; set; }
+        [ForeignKey("Impuesto")]
+        public int? ImpuestoID { get; set; }
 
         public string? CodigoBarras { get; set; }
         public bool? TieneImpuesto { get; set; }
 
-       // Propiedades de navegación (opcionales pero recomendadas)
+       //Propiedades de navegación (opcionales pero recomendadas)
         public virtual Proveedor? Proveedor { get; set; }
         public virtual Categoria? Categoria { get; set; }
 

@@ -82,7 +82,7 @@ namespace GoDentalAPP.ViewModels
         // Cargar clientes e insumos
         private async void CargarDatosIniciales()
         {
-            var clientes = await _clienteRepository.ObtenerTodos();
+            var clientes = await _clienteRepository.GetClientesAsync();
             var insumos = await _insumoRepository.GetInsumosDentalesAsync();
 
             Clientes.Clear();

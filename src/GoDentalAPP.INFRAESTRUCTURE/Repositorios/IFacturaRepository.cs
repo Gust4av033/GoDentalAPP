@@ -50,7 +50,7 @@ namespace GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios
             {
                 return await _context.Facturas
                     .Include(f => f.Detalles)
-                    .ThenInclude(d => d.Insumo)
+                    .ThenInclude(d => d.InsumoID)
                     .FirstOrDefaultAsync(f => f.FacturaID == id);
             }
 

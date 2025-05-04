@@ -11,10 +11,9 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int FacturaID { get; set; }
 
+        [ForeignKey("Venta")]
         public int? VentaID { get; set; }
 
-        [Required]
-        [Column(TypeName = "datetime")]
         public DateTime FechaFactura { get; set; } = DateTime.Now;
 
         [Required]
@@ -25,42 +24,62 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
         [StringLength(50)]
         public string NumeroFactura { get; set; }
 
+        [ForeignKey("TipoPago")]
         public int? TipoPagoID { get; set; }
 
+        [ForeignKey("Estado")]
         public int? EstadoID { get; set; }
 
         public Guid? CodigoGeneracion { get; set; }
 
         [StringLength(2)]
-        public string TipoDte { get; set; }
+        public string? TipoDte { get; set; }
 
         [StringLength(500)]
-        public string SelloRecibido { get; set; }
+        public string? SelloRecibido { get; set; }
 
         [StringLength(50)]
-        public string NumeroControl { get; set; }
+        public string? NumeroControl { get; set; }
 
         [StringLength(20)]
-        public string EstadoDte { get; set; }
+        public string? EstadoDte { get; set; }
 
-        public string JsonDte { get; set; }
+        public string? JsonDte { get; set; }
 
-        public string PdfBase64 { get; set; }
+        public string? PdfBase64 { get; set; }
 
-        public int ClienteId { get; set; }
-//propiedades para guardar factura offline
-        public string Serie { get; set; }
-        public bool EsOffline { get; set; }
-        public bool Sincronizada { get; set; }
-        public string RutaPdfLocal { get; set; }
-        public string SerieOffline { get; set; }
-        public DateTime FechaSincronizacion { get; set; }
-        public string CodigoMH { get; set; }
+        [ForeignKey("Cliente")]
+        public int? ClienteId { get; set; }
 
-        // Propiedades de navegación
-        // public virtual TipoPago TipoPago { get; set; }
-        public virtual Estado Estado { get; set; }
-       // public virtual Venta Venta { get; set; }
-        public virtual ICollection<DetalleFactura> Detalles { get; set; } = new List<DetalleFactura>();
+        [StringLength(100)]
+        public string? CodigoControl { get; set; }
+
+        public DateTime? FechaHoraCertificacion { get; set; }
+
+        [StringLength(100)]
+        public string? CAE { get; set; }
+
+        public DateTime? FechaVencimientoCAE { get; set; }
+
+        [StringLength(500)]
+        public string? Observaciones { get; set; }
+
+        [ForeignKey("TipoDocumentoCliente")]
+        public int? TipoDocumentoCliente { get; set; }
+
+        [StringLength(20)]
+        public string? NumeroDocumentoCliente { get; set; }
+
+        // Navigation properties
+        public virtual Venta Venta { get; set; }
+        public virtual TipoPago TipoPago { get; set; }
+        public virtual Estado Estados { get; set; }
+        public virtual Cliente Cliente { get; set; }
+        public virtual TipoDocumento TipoDocumentoClienteNav { get; set; }
+        public virtual ICollection<DetalleFactura> Detalles { get; set; }
+        public virtual ICollection<FacturaSincronizacion> Sincronizaciones { get; set; }
+        public bool Sincronizada { get; internal set; }
+        public DateTime FechaSincronizacion { get; internal set; }
+        public string CodigoMH { get; internal set; }
     }
 }

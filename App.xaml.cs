@@ -18,6 +18,7 @@ using static GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios.IFacturaRe
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Hosting;
 using GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Services;
+using GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsCliente;
 
 
 namespace GoDentalAPP
@@ -84,12 +85,14 @@ namespace GoDentalAPP
             services.AddTransient<FacturacionViewModel>();
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<ProductosViewModel>();
+            services.AddTransient<ClientesViewModel>();
 
             // Vistas
             services.AddTransient<LoginView>();
             services.AddTransient<MainWindow>();
             services.AddTransient<RDUsuario>();
             services.AddTransient<ProductosMainWindow>();
+            services.AddTransient<ClienteViewPrincipal>();
 
             ServiceProvider = services.BuildServiceProvider();
 

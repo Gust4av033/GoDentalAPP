@@ -61,9 +61,9 @@ namespace GoDentalAPP.Infrastructure.Services
                 ClienteId = facturaDto.ClienteId,
                 Detalles = facturaDto.Detalles.Select(d => new DetalleFactura
                 {
-                    InsumoId = d.InsumoId,
+                    InsumoID = d.InsumoId,
                     Cantidad = d.Cantidad,
-                    Precio = d.PrecioUnitario,
+                    PrecioUnitario = d.PrecioUnitario,
                     Total = d.Total
                 }).ToList()
             };
@@ -74,7 +74,7 @@ namespace GoDentalAPP.Infrastructure.Services
             // Actualizar stock - versión corregida
             foreach (var detalle in factura.Detalles)
             {
-                var insumo = await _insumoRepo.GetInsumoDentalAsync(detalle.InsumoId);
+                var insumo = await _insumoRepo.GetInsumoDentalAsync((int)detalle.InsumoID);
                 if (insumo != null)
                 {
                     insumo.CantidadEnStock -= (int)detalle.Cantidad;
@@ -91,12 +91,13 @@ namespace GoDentalAPP.Infrastructure.Services
             factura.TipoDte = "03";
 
             // Obtener datos para DTE
-            var cliente = await _clienteRepo.ObtenerPorId(facturaDto.ClienteId);
+            var cliente = await _clienteRepo.GetClienteDetallesAsync(facturaDto.ClienteId);
             var token = await _dteService.ObtenerTokenAutenticacion();
 
             // Generar Guid primero
             var codigoGeneracion = Guid.NewGuid();
 
+            // Replace the problematic code block in the CrearCreditoFiscal method
             var dteData = new DteData
             {
                 Identificacion = new Identificacion
@@ -115,27 +116,28 @@ namespace GoDentalAPP.Infrastructure.Services
                 },
                 Receptor = new Receptor
                 {
-                    Nit = cliente.Nit,
+                    Nit = cliente.NIT,
                     Nombre = cliente.NombreCompleto
                 },
-                CuerpoDocumento = factura.Detalles.Select((d, i) => new CuerpoDocumento
-                {
-                    NumItem = i + 1,
-                    Cantidad = d.Cantidad,
-                    Codigo = d.Insumo.CodigoBarras,
-                    Descripcion = d.Insumo.NombreInsumo,
-                    PrecioUni = d.Precio,
-                    VentaGravada = (bool)d.Insumo.TieneImpuesto ? d.Total : 0,
-                    Tributos = (bool)d.Insumo.TieneImpuesto ? "20" :"",
-                    IvaItem = (bool)d.Insumo.TieneImpuesto ? d.Total * 0.13m : 0
-                }).ToList(),
+                CuerpoDocumento = factura.Detalles
+                    .Select((d, i) => new CuerpoDocumento
+                    {
+                        NumItem = i + 1,
+                        Cantidad = d.Cantidad,
+                        Codigo = d.InsumoDental?.CodigoBarras ?? string.Empty, // Use navigation property
+                        Descripcion = d.InsumoDental?.NombreInsumo ?? string.Empty, // Use navigation property
+                        PrecioUni = d.PrecioUnitario,
+                        VentaGravada = d.InsumoDental?.TieneImpuesto == true ? d.Total : 0,
+                        Tributos = d.InsumoDental?.TieneImpuesto == true ? "20" : string.Empty,
+                        IvaItem = d.InsumoDental?.TieneImpuesto == true ? d.Total * 0.13m : 0
+                    }).ToList(),
                 Resumen = new Resumen
                 {
                     TotalGravada = factura.Detalles
-                        .Where(d => (bool)d.Insumo.TieneImpuesto)
+                        .Where(d => d.InsumoDental?.TieneImpuesto == true)
                         .Sum(d => d.Total),
                     TotalExenta = factura.Detalles
-                        .Where(d => (bool)!d.Insumo.TieneImpuesto)
+                        .Where(d => d.InsumoDental?.TieneImpuesto != true)
                         .Sum(d => d.Total),
                     MontoTotalOperacion = factura.Detalles.Sum(d => d.Total),
                     TotalLetras = NumeroALetras(factura.Detalles.Sum(d => d.Total)),

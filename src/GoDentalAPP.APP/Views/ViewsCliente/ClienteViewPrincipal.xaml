@@ -1,0 +1,137 @@
+﻿<UserControl x:Class="GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsCliente.ClienteViewPrincipal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsCliente"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <!-- Usa el BooleanToVisibilityConverter incorporado de WPF -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Search Controls -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
+            <TextBlock Text="Buscar:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBox Width="200" Text="{Binding TextoBusqueda, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="Buscar" Command="{Binding BuscarCommand}" Margin="5,0,0,0" Width="80"/>
+        </StackPanel>
+
+        <!-- Main DataGrid -->
+        <DataGrid Grid.Row="1" 
+                  ItemsSource="{Binding Clientes}"
+                  SelectedItem="{Binding ClienteSeleccionado}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  Margin="10">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Nombre" Binding="{Binding NombreCompleto}" Width="*"/>
+                <DataGridTextColumn Header="Teléfono" Binding="{Binding Telefono}" Width="120"/>
+                <DataGridTextColumn Header="Dirección" Binding="{Binding Direccion}" Width="*"/>
+                <DataGridTextColumn Header="NIT" Binding="{Binding NIT}" Width="120"/>
+                <DataGridTemplateColumn Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Ver más" 
+                                    Command="{Binding DataContext.VerDetallesCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    Margin="2" Padding="5"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <Button Content="Agregar" Command="{Binding AgregarCommand}" Width="100" Margin="5"/>
+            <Button Content="Editar" Command="{Binding EditarCommand}" Width="100" Margin="5"/>
+            <Button Content="Eliminar" Command="{Binding EliminarCommand}" Width="100" Margin="5"/>
+            <Button Content="Exportar" Command="{Binding ExportarCommand}" Width="100" Margin="5"/>
+        </StackPanel>
+
+        <!-- Detalles del Cliente (Popup/Modal) -->
+        <Border Grid.RowSpan="3" 
+                Background="#80000000" 
+                Visibility="{Binding MostrarDetalles, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Panel.ZIndex="1">
+            <Border Background="White" Width="600" Height="500" CornerRadius="5" Padding="15">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Detalles del Cliente" FontSize="18" FontWeight="Bold"/>
+
+                    <ScrollViewer Grid.Row="1" Margin="0,10,0,0">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Nombre:" Grid.Row="0" Grid.Column="0" Margin="0,0,10,5" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding ClienteDetalles.NombreCompleto}" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Teléfono:" Grid.Row="1" Grid.Column="0" Margin="0,0,10,5" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding ClienteDetalles.Telefono}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Correo:" Grid.Row="2" Grid.Column="0" Margin="0,0,10,5" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding ClienteDetalles.CorreoElectronico}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Dirección:" Grid.Row="3" Grid.Column="0" Margin="0,0,10,5" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding ClienteDetalles.Direccion}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="NIT:" Grid.Row="4" Grid.Column="0" Margin="0,0,10,5" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding ClienteDetalles.NIT}" Grid.Row="4" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="NRC:" Grid.Row="5" Grid.Column="0" Margin="0,0,10,5" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding ClienteDetalles.NRC}" Grid.Row="5" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Tipo Contribuyente:" Grid.Row="6" Grid.Column="0" Margin="0,0,10,5" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding ClienteDetalles.TipoContribuyente}" Grid.Row="6" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Giro:" Grid.Row="7" Grid.Column="0" Margin="0,0,10,5" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding ClienteDetalles.Giro}" Grid.Row="7" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Tipo Documento:" Grid.Row="8" Grid.Column="0" Margin="0,0,10,5" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding ClienteDetalles.TipoDocumento.NombreDocumento}" Grid.Row="8" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Número Documento:" Grid.Row="9" Grid.Column="0" Margin="0,0,10,5" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding ClienteDetalles.NumeroDocumento}" Grid.Row="9" Grid.Column="1" Margin="0,0,0,5"/>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <Button Grid.Row="2" Content="Cerrar" Command="{Binding CerrarDetallesCommand}" 
+                            HorizontalAlignment="Right" Width="80" Margin="0,10,0,0"/>
+                </Grid>
+            </Border>
+        </Border>
+    </Grid>
+</UserControl>

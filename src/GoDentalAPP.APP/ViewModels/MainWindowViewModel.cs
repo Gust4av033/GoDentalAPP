@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 using System.Windows.Input;
 using GoDentalAPP.Helpers;
+using GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsCliente;
 using GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsProducto;
 using GoDentalAPP.src.GoDentalAPP.CORE.Interfaces;
 using GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios;
@@ -53,7 +54,11 @@ namespace GoDentalAPP.ViewModels
             });
 
             ShowProveedoresCommand = new RelayCommand(o => CurrentView = new ProveedoresViewModel());
-            ShowClientesCommand = new RelayCommand(o => CurrentView = new ClientesViewModel());
+            ShowClientesCommand = new RelayCommand(o =>
+            {
+                var clientesView = App.ServiceProvider.GetRequiredService<ClienteViewPrincipal>();
+                CurrentView = clientesView;
+            });
             ShowVentasCommand = new RelayCommand(o => CurrentView = new VentasViewModel());
             ShowOrdenesCompraCommand = new RelayCommand(o => CurrentView = new OrdenesCompraViewModel());
             ShowUsuariosCommand = new RelayCommand(o => CurrentView = new UsuariosViewModel());
