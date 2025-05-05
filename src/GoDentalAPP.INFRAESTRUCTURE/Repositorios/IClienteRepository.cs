@@ -41,9 +41,38 @@ namespace GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios
 
         public async Task<List<Cliente>> GetClientesActivosAsync()
         {
-            return await _context.Clientes
-                .FromSqlRaw("EXEC [dbo].[MostrarClientesActivos]")
-                .ToListAsync();
+            try
+            {
+                return await _context.Clientes
+                    .AsNoTracking() // Evita tracking de cambios
+                    .Include(c => c.Estado)
+                    .Where(c => c.EstadoID == 1) // Usa directamente el ID del estado activo
+                    .Select(c => new Cliente // Proyección explícita
+                    {
+                        ClienteID = c.ClienteID,
+                        NombreCompleto = c.NombreCompleto,
+                        Telefono = c.Telefono,
+                        CorreoElectronico = c.CorreoElectronico,
+                        Direccion = c.Direccion,
+                        LinkDireccion = c.LinkDireccion,
+                        FechaRegistro = c.FechaRegistro,
+                        EstadoID = c.EstadoID,
+                        NIT = c.NIT,
+                        NRC = c.NRC,
+                        TipoContribuyente = c.TipoContribuyente,
+                        Giro = c.Giro,
+                        TiposDocumentoID = c.TiposDocumentoID,
+                        NumeroDocumento = c.NumeroDocumento,
+                        Estado = c.Estado // Carga explícita de la relación
+                    })
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log del error
+                Console.WriteLine($"Error al obtener clientes activos: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<List<Cliente>> GetClientesInactivosAsync()
@@ -55,10 +84,42 @@ namespace GoDentalAPP.src.GoDentalAPP.INFRAESTRUCTURE.Repositorios
 
         public async Task<Cliente> GetClienteDetallesAsync(int id)
         {
-            return await _context.Clientes
-                .Include(c => c.Estado)
-                .Include(c => c.TipoDocumento)
-                .FirstOrDefaultAsync(c => c.ClienteID == id);
+            try
+            {
+                // Obtener el cliente con todas sus relaciones necesarias
+                var cliente = await _context.Clientes
+                    .Include(c => c.Estado)
+                    .Include(c => c.TipoDocumento)
+                    .AsNoTracking() // Para mejorar el rendimiento si solo es para lectura
+                    .FirstOrDefaultAsync(c => c.ClienteID == id);
+
+                if (cliente == null)
+                {
+                    // Opcionalmente, puedes lanzar una excepción personalizada
+                    throw new KeyNotFoundException($"No se encontró un cliente con ID {id}");
+                }
+
+                // Aseguramos que las propiedades de navegación estén disponibles (evitar null references)
+                if (cliente.Estado == null)
+                {
+                    // Si por alguna razón el estado es nulo pero tenemos el ID
+                    cliente.Estado = await _context.Estados.FindAsync(cliente.EstadoID);
+                }
+
+                if (cliente.TipoDocumento == null)
+                {
+                    // Si por alguna razón el tipo de documento es nulo pero tenemos el ID
+                    cliente.TipoDocumento = await _context.TiposDocumento.FindAsync(cliente.TiposDocumentoID);
+                }
+
+                return cliente;
+            }
+            catch (Exception ex)
+            {
+                // Usa un logger apropiado en lugar de Console.WriteLine para entorno de producción
+                Console.WriteLine($"Error al obtener detalles del cliente: {ex.Message}");
+                throw; // Relanza la excepción para manejo superior
+            }
         }
 
         public async Task<Cliente> GetClienteAsync(int id)

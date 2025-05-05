@@ -44,6 +44,7 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
         public string? Giro { get; set; }
 
         [ForeignKey("TipoDocumento")]
+        [Column("TiposDocumentoID")]
         public int? TiposDocumentoID { get; set; }
 
         [StringLength(20)]

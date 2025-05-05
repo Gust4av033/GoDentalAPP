@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
 {
+    [Table("TiposDocumento")] // Añadir este atributo
     public class TipoDocumento
     {
         [Key]

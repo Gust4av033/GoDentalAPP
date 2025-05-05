@@ -53,11 +53,14 @@ namespace GoDentalAPP.Infrastructure.Persistence.Configurations
             // Relationships
             builder.HasOne(c => c.Estado)
                 .WithMany()
-                .HasForeignKey(c => c.EstadoID);
+                .HasForeignKey(c => c.EstadoID) // Nombre exacto
+                .HasConstraintName("FK_Clientes_Estados");
 
             builder.HasOne(c => c.TipoDocumento)
                 .WithMany()
-                .HasForeignKey(c => c.TiposDocumentoID);
+                .HasForeignKey(c => c.TiposDocumentoID) // Usar el nombre exacto
+                .HasConstraintName("FK_Clientes_TiposDocumento");
+
         }
     }
 }

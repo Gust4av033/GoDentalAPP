@@ -74,6 +74,8 @@ namespace GoDentalAPP
             services.AddScoped<IFacturaRepository, FacturaRepository>();
             services.AddScoped<ICategoriaRepository, CategoriaRepository>();
             services.AddScoped<IProveedorRepository, ProveedorRepository>();
+            services.AddScoped<IEstadoRepository, EstadoRepository>();
+            services.AddScoped<ITipoDocumentoRepository, TipoDocumentoRepository>();
 
             //Otros servicios
             services.AddHostedService<SincronizacionService>(); // servicio de sincronización 
