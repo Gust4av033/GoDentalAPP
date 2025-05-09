@@ -56,5 +56,12 @@ namespace GoDentalAPP.src.GoDentalAPP.CORE.Entities
         public virtual ICollection<Venta> Ventas { get; set; }
         public virtual ICollection<Factura> Facturas { get; set; }
 
+        //Calculadas
+        public string NombreEstado => Estado?.NombreEstado ?? "No asignado";
+        public string NombreTipoDocumento => TipoDocumento?.Nombre ?? "No asignado";
+
+        // Propiedad para verificar estado activo
+        public bool EstaActivo => EstadoID == 1; // Asumiendo que 1 es el ID de estado activo
+
     }
 }

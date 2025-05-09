@@ -26,8 +26,8 @@ namespace GoDentalAPP.src.GoDentalAPP.APP.Views.ViewsCliente
         public ClienteViewPrincipal()
         {
             InitializeComponent();
-            DataContext = App.ServiceProvider.GetRequiredService<ClientesViewModel>();
-
+            var vm = App.ServiceProvider.GetRequiredService<ClientesViewModel>();
+            DataContext = vm;   
         }
 
     }

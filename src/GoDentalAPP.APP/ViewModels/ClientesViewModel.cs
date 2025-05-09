@@ -12,10 +12,12 @@ using System.Windows;
 using System.Windows.Controls;
 using ClosedXML.Excel;
 using System.Diagnostics;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace GoDentalAPP.ViewModels
 {
-    public class ClientesViewModel : BaseViewModel
+    public class ClientesViewModel : BaseViewModel, INotifyPropertyChanged
     {
         private readonly IClienteRepository _clienteRepository;
         private readonly IEstadoRepository _estadoRepository;
@@ -29,18 +31,42 @@ namespace GoDentalAPP.ViewModels
         private bool _esNuevoCliente;
 
         public ObservableCollection<Cliente> Clientes { get; } = new ObservableCollection<Cliente>();
+
         private ObservableCollection<Estado> _estados;
         public ObservableCollection<Estado> Estados
         {
             get => _estados;
-            set => SetProperty(ref _estados, value);
+            set
+            {
+                _estados = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(NombreEstadoSeleccionado));
+            }
         }
+
         private ObservableCollection<TipoDocumento> _tiposDocumento;
         public ObservableCollection<TipoDocumento> TiposDocumento
         {
             get => _tiposDocumento;
-            set => SetProperty(ref _tiposDocumento, value);
+            set
+            {
+                _tiposDocumento = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(NombreTipoDocumentoSeleccionado));
+            }
         }
+
+        // Propiedades calculadas para mostrar nombres
+        public string NombreEstadoSeleccionado =>
+            ClienteDetalles?.EstadoID > 0 ?
+            Estados.FirstOrDefault(e => e.EstadoID == ClienteDetalles.EstadoID)?.NombreEstado ?? "No asignado" :
+            "No asignado";
+
+        public string NombreTipoDocumentoSeleccionado =>
+            ClienteDetalles?.TiposDocumentoID > 0 ?
+            TiposDocumento.FirstOrDefault(t => t.TipoDocumentoID == ClienteDetalles.TiposDocumentoID)?.Nombre ?? "No asignado" :
+            "No asignado";
+
         public string TituloFormulario => EsNuevoCliente ? "Nuevo Cliente" : "Editar Cliente";
         public bool TieneClienteSeleccionado => ClienteSeleccionado != null;
 
@@ -50,7 +76,6 @@ namespace GoDentalAPP.ViewModels
             set { _textoBusqueda = value; OnPropertyChanged(); }
         }
 
-        
         public Cliente ClienteSeleccionado
         {
             get => _clienteSeleccionado;
@@ -58,12 +83,10 @@ namespace GoDentalAPP.ViewModels
             {
                 if (SetProperty(ref _clienteSeleccionado, value))
                 {
-                    // Cargar detalles si hay un cliente seleccionado
                     if (_clienteSeleccionado != null)
                     {
                         CargarDetallesClienteAsync(_clienteSeleccionado.ClienteID);
                     }
-
                     OnPropertyChanged(nameof(TieneClienteSeleccionado));
                 }
             }
@@ -72,7 +95,12 @@ namespace GoDentalAPP.ViewModels
         public Cliente ClienteDetalles
         {
             get => _clienteDetalles;
-            set => SetProperty(ref _clienteDetalles, value);
+            set
+            {
+                SetProperty(ref _clienteDetalles, value);
+                OnPropertyChanged(nameof(NombreEstadoSeleccionado));
+                OnPropertyChanged(nameof(NombreTipoDocumentoSeleccionado));
+            }
         }
 
         public bool MostrarDetalles
@@ -81,7 +109,6 @@ namespace GoDentalAPP.ViewModels
             set { _mostrarDetalles = value; OnPropertyChanged(); }
         }
 
-        
         public bool EsNuevoCliente
         {
             get => _esNuevoCliente;
@@ -93,9 +120,6 @@ namespace GoDentalAPP.ViewModels
             get => _mostrarFormulario;
             set { _mostrarFormulario = value; OnPropertyChanged(); }
         }
-
-
-
 
         public ICommand BuscarCommand { get; }
         public ICommand AgregarCommand { get; }
@@ -123,9 +147,7 @@ namespace GoDentalAPP.ViewModels
             Estados = new ObservableCollection<Estado>();
             TiposDocumento = new ObservableCollection<TipoDocumento>();
 
-            // Cargar datos maestros
-            CargarDatosMaestrosAsync();
-
+            // Inicializar comandos
             BuscarCommand = new RelayCommand(async (param) => await BuscarClientes());
             AgregarCommand = new RelayCommand((param) => PrepararNuevoCliente());
             EditarCommand = new RelayCommand(async (param) => await EditarCliente(), (param) => ClienteSeleccionado != null);
@@ -139,91 +161,64 @@ namespace GoDentalAPP.ViewModels
             AbrirMapaCommand = new RelayCommand(parameter => AbrirMapa(parameter as Cliente));
             AbrirLinkCommand = new RelayCommand(parameter => AbrirLink(parameter as string));
 
-            CargarClientes();
-            CargarEstados();
-            CargarTiposDocumento();
-
+            // Cargar datos iniciales
+            Task.Run(async () =>
+            {
+                await CargarEstados();
+                await CargarTiposDocumento();
+                await CargarClientes();
+            }).ConfigureAwait(false);
         }
 
-        public ClientesViewModel() { }
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
-        private async void CargarDatosMaestrosAsync()
+        public async Task CargarEstados()
         {
             try
             {
-                // Cargar estados
                 var estados = await _estadoRepository.GetAllAsync();
-                Estados.Clear();
-                foreach (var estado in estados)
-                {
-                    Estados.Add(estado);
-                }
-
-                // Cargar tipos de documento
-                var tiposDocumento = await _tipoDocumentoRepository.GetAllAsync();
-                TiposDocumento.Clear();
-                foreach (var tipo in tiposDocumento)
-                {
-                    TiposDocumento.Add(tipo);
-                }
+                Estados = new ObservableCollection<Estado>(estados.DistinctBy(e => e.EstadoID));
+                OnPropertyChanged(nameof(Estados));
             }
             catch (Exception ex)
             {
-                // Manejar error
-                // Idealmente, mostrar un mensaje al usuario
-                Debug.WriteLine($"Error al cargar datos maestros: {ex.Message}");
+                MessageBox.Show($"Error al cargar estados: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private async void CargarDetallesClienteAsync(int clienteId)
+        public async Task CargarTiposDocumento()
         {
             try
             {
-                var cliente = await _clienteRepository.GetClienteDetallesAsync(clienteId);
-                ClienteDetalles = cliente;
-
-                // Asegurarnos que los IDs coincidan con los objetos de las colecciones
-                if (cliente.Estado != null && cliente.EstadoID > 0)
-                {
-                    // Verificar que el estado exista en nuestra colección local
-                    var estadoEnColeccion = Estados.FirstOrDefault(e => e.EstadoID == cliente.EstadoID);
-                    if (estadoEnColeccion == null)
-                    {
-                        // Si no existe, podríamos agregarlo a la colección
-                        Estados.Add(cliente.Estado);
-                    }
-                }
-
-                if (cliente.TipoDocumento != null && cliente.TiposDocumentoID > 0)
-                {
-                    // Verificar que el tipo de documento exista en nuestra colección local
-                    var tipoEnColeccion = TiposDocumento.FirstOrDefault(t => t.TipoDocumentoID == cliente.TiposDocumentoID);
-                    if (tipoEnColeccion == null)
-                    {
-                        // Si no existe, podríamos agregarlo a la colección
-                        TiposDocumento.Add(cliente.TipoDocumento);
-                    }
-                }
+                var tipos = await _tipoDocumentoRepository.GetAllAsync();
+                TiposDocumento = new ObservableCollection<TipoDocumento>(tipos.DistinctBy(t => t.TipoDocumentoID));
+                OnPropertyChanged(nameof(TiposDocumento));
             }
             catch (Exception ex)
             {
-                // Manejar error
-                Debug.WriteLine($"Error al cargar detalles del cliente {clienteId}: {ex.Message}");
-                // Mostrar mensaje al usuario
+                MessageBox.Show($"Error al cargar tipos de documento: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private async Task CargarClientes()
+        public async Task CargarClientes()
         {
             try
             {
                 IsBusy = true;
-                Clientes.Clear();
                 var clientes = await _clienteRepository.GetClientesActivosAsync();
-                foreach (var cliente in clientes)
+
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Clientes.Add(cliente);
-                }
+                    Clientes.Clear();
+                    foreach (var cliente in clientes)
+                    {
+                        Clientes.Add(cliente);
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -235,37 +230,31 @@ namespace GoDentalAPP.ViewModels
             }
         }
 
-        private async Task CargarEstados()
-        {
-            try
-            {
-                Estados.Clear();
-                var estados = await _estadoRepository.GetAllAsync();
-                foreach (var estado in estados)
-                {
-                    Estados.Add(estado);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al cargar estados: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
-        private async Task CargarTiposDocumento()
+        public async void CargarDetallesClienteAsync(int clienteId)
         {
             try
             {
-                TiposDocumento.Clear();
-                var tipos = await _tipoDocumentoRepository.GetAllAsync();
-                foreach (var tipo in tipos)
+                var cliente = await _clienteRepository.GetClienteDetallesAsync(clienteId);
+                if (cliente != null)
                 {
-                    TiposDocumento.Add(tipo);
+                    ClienteDetalles = cliente;
+
+                    // Forzar la actualización de las propiedades de navegación
+                    if (cliente.Estado == null && cliente.EstadoID > 0)
+                    {
+                        cliente.Estado = Estados.FirstOrDefault(e => e.EstadoID == cliente.EstadoID);
+                    }
+
+                    if (cliente.TipoDocumento == null && cliente.TiposDocumentoID.HasValue)
+                    {
+                        cliente.TipoDocumento = TiposDocumento.FirstOrDefault(t => t.TipoDocumentoID == cliente.TiposDocumentoID.Value);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar tipos de documento: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Debug.WriteLine($"Error al cargar detalles del cliente {clienteId}: {ex.Message}");
             }
         }
 
@@ -314,11 +303,14 @@ namespace GoDentalAPP.ViewModels
             ClienteDetalles = new Cliente
             {
                 FechaRegistro = DateTime.Now,
-                EstadoID = 1 // Estado activo por defecto
+                EstadoID = Estados.FirstOrDefault()?.EstadoID ?? 1, // Estado activo por defecto
+                TiposDocumentoID = TiposDocumento.FirstOrDefault()?.TipoDocumentoID
             };
             EsNuevoCliente = true;
             MostrarFormulario = true;
+            OnPropertyChanged(nameof(TituloFormulario));
         }
+
 
         private async Task GuardarCliente()
         {
@@ -337,6 +329,9 @@ namespace GoDentalAPP.ViewModels
 
                 await CargarClientes();
                 MostrarFormulario = false;
+                ClienteDetalles = null;
+                EsNuevoCliente = false;
+                OnPropertyChanged(nameof(TituloFormulario));
             }
             catch (Exception ex)
             {
@@ -344,25 +339,46 @@ namespace GoDentalAPP.ViewModels
             }
         }
 
+
         private void CancelarEdicion()
         {
             MostrarFormulario = false;
             ClienteDetalles = null;
+            EsNuevoCliente = false;
+            OnPropertyChanged(nameof(TituloFormulario));
         }
 
-        private async Task VerDetalles()
+
+        public async Task VerDetalles()
         {
             try
             {
+                Debug.WriteLine($"Intentando ver detalles. ClienteSeleccionado es nulo? {ClienteSeleccionado == null}");
+
                 if (ClienteSeleccionado != null)
                 {
+                    Debug.WriteLine($"ClienteID seleccionado: {ClienteSeleccionado.ClienteID}");
+
                     IsBusy = true;
-                    ClienteDetalles = await _clienteRepository.GetClienteDetallesAsync(ClienteSeleccionado.ClienteID);
-                    MostrarDetalles = true;
+                    var detalles = await _clienteRepository.GetClienteDetallesAsync(ClienteSeleccionado.ClienteID);
+
+                    if (detalles != null)
+                    {
+                        Debug.WriteLine("Detalles cargados correctamente");
+
+                        detalles.Estado = Estados.FirstOrDefault(e => e.EstadoID == detalles.EstadoID);
+                        detalles.TipoDocumento = TiposDocumento.FirstOrDefault(t => t.TipoDocumentoID == detalles.TiposDocumentoID);
+
+                        ClienteDetalles = detalles;
+                        MostrarDetalles = true;
+
+                        Debug.WriteLine($"MostrarDetalles establecido a: {MostrarDetalles}");
+                    }
                 }
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"Error en VerDetalles: {ex.Message}");
                 MessageBox.Show($"Error al cargar detalles del cliente: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -371,22 +387,53 @@ namespace GoDentalAPP.ViewModels
             }
         }
 
+
         private async Task EditarCliente()
         {
             try
             {
+                Debug.WriteLine($"Intentando editar. ClienteSeleccionado es nulo? {ClienteSeleccionado == null}");
+
                 if (ClienteSeleccionado != null)
                 {
-                    ClienteDetalles = await _clienteRepository.GetClienteDetallesAsync(ClienteSeleccionado.ClienteID);
-                    EsNuevoCliente = false;
-                    MostrarFormulario = true;
+                    Debug.WriteLine($"Editando cliente ID: {ClienteSeleccionado.ClienteID}");
+                    Debug.WriteLine($"Estados cargados: {Estados?.Count ?? 0}");
+                    Debug.WriteLine($"TiposDocumento cargados: {TiposDocumento?.Count ?? 0}");
+
+                    var detalles = await _clienteRepository.GetClienteDetallesAsync(ClienteSeleccionado.ClienteID);
+                    if (detalles != null)
+                    {
+                        // Verifica que las colecciones estén cargadas
+                        if (Estados == null || Estados.Count == 0)
+                        {
+                            await CargarEstados();
+                        }
+
+                        if (TiposDocumento == null || TiposDocumento.Count == 0)
+                        {
+                            await CargarTiposDocumento();
+                        }
+
+                        detalles.Estado = Estados.FirstOrDefault(e => e.EstadoID == detalles.EstadoID);
+                        detalles.TipoDocumento = TiposDocumento.FirstOrDefault(t => t.TipoDocumentoID == detalles.TiposDocumentoID);
+
+                        Debug.WriteLine($"Estado asignado: {detalles.Estado?.NombreEstado ?? "null"}");
+                        Debug.WriteLine($"TipoDocumento asignado: {detalles.TipoDocumento?.Nombre ?? "null"}");
+
+                        ClienteDetalles = detalles;
+                        EsNuevoCliente = false;
+                        MostrarFormulario = true;
+                        OnPropertyChanged(nameof(TituloFormulario));
+                    }
                 }
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"Error en EditarCliente: {ex.Message}");
                 MessageBox.Show($"Error al preparar edición: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
         private async Task EliminarCliente()
         {
@@ -506,37 +553,47 @@ namespace GoDentalAPP.ViewModels
             }
         }
 
-        private void AbrirMapa(Cliente cliente)
+        public void AbrirMapa(Cliente cliente)
         {
-            try
+            if (cliente == null)
             {
-                string url;
-                if (!string.IsNullOrWhiteSpace(cliente.LinkDireccion))
-                {
-                    url = cliente.LinkDireccion;
-                }
-                else if (!string.IsNullOrWhiteSpace(cliente.Direccion))
-                {
-                    string direccionCodificada = Uri.EscapeDataString(cliente.Direccion);
-                    url = $"https://www.google.com/maps/search/?api=1&query={direccionCodificada}";
-                }
-                else
-                {
-                    MessageBox.Show("El cliente no tiene dirección registrada.", "Información", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return;
-                }
+                MessageBox.Show("No hay cliente seleccionado.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = url,
-                    UseShellExecute = true
-                });
-            }
-            catch (Exception ex)
+            // Si hay un link directo, úsalo
+            if (!string.IsNullOrWhiteSpace(cliente.LinkDireccion))
             {
-                MessageBox.Show($"Error al abrir mapa: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                try
+                {
+                    Process.Start(new ProcessStartInfo("cmd", $"/c start {cliente.LinkDireccion}") { CreateNoWindow = true });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al abrir el enlace de dirección: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                return;
             }
+
+            // Si no hay link, usa la dirección para buscar en Google Maps
+            if (!string.IsNullOrWhiteSpace(cliente.Direccion))
+            {
+                string direccionUrl = Uri.EscapeDataString(cliente.Direccion);
+                string url = $"https://www.google.com/maps/search/?api=1&query={direccionUrl}";
+                try
+                {
+                    Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al abrir Google Maps: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                return;
+            }
+
+            MessageBox.Show("El cliente no tiene dirección registrada.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
+
 
         private void AbrirLink(string url)
         {

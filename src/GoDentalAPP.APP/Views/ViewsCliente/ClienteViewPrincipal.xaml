@@ -8,21 +8,20 @@
              d:DesignHeight="600" d:DesignWidth="800">
 
     <UserControl.Resources>
-        <!-- Solo usamos el converter nativo de WPF -->
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
-        <Style x:Key="FormLabelStyle" TargetType="TextBlock">
+        <Style x:Key="FormLabelStyle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="Margin" Value="0,0,10,5"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
 
-        <Style x:Key="FormInputStyle" TargetType="TextBox">
+        <Style x:Key="FormInputStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
             <Setter Property="Margin" Value="0,0,0,10"/>
             <Setter Property="Padding" Value="5"/>
         </Style>
 
-        <Style x:Key="FormComboStyle" TargetType="ComboBox">
+        <Style x:Key="FormComboStyle" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
             <Setter Property="Margin" Value="0,0,0,10"/>
             <Setter Property="Padding" Value="5"/>
         </Style>
@@ -57,7 +56,7 @@
                 <DataGridTextColumn Header="Teléfono" Binding="{Binding Telefono}" Width="120"/>
                 <DataGridTextColumn Header="Dirección" Binding="{Binding Direccion}" Width="*"/>
                 <DataGridTextColumn Header="NIT" Binding="{Binding NIT}" Width="120"/>
-                <DataGridTextColumn Header="Estado" Binding="{Binding Estado.Nombre}" Width="100"/>
+                <DataGridTextColumn Header="Estado" Binding="{Binding NombreEstado}" Width="100"/>
                 <DataGridTemplateColumn Width="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -87,7 +86,7 @@
                 Background="#80000000" 
                 Visibility="{Binding MostrarDetalles, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Panel.ZIndex="1">
-            <Border Background="White" Width="600" Height="500" CornerRadius="5" Padding="15">
+            <Border Background="{StaticResource DarkBackgroundBrush}" Width="600" Height="500" CornerRadius="5" Padding="15">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -95,7 +94,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Detalles del Cliente" FontSize="18" FontWeight="Bold"/>
+                    <TextBlock Text="Detalles del Cliente" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
 
                     <ScrollViewer Grid.Row="1" Margin="0,10,0,0">
                         <StackPanel>
@@ -116,20 +115,21 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Text="Nombre:" Grid.Row="0" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
-                                <TextBlock Text="{Binding ClienteDetalles.NombreCompleto}" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10"/>
+                                <TextBlock Text="{Binding ClienteDetalles.NombreCompleto}" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
 
                                 <TextBlock Text="Teléfono:" Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
-                                <TextBlock Text="{Binding ClienteDetalles.Telefono}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,10"/>
+                                <TextBlock Text="{Binding ClienteDetalles.Telefono}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
 
                                 <TextBlock Text="Correo:" Grid.Row="2" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
-                                <TextBlock Text="{Binding ClienteDetalles.CorreoElectronico}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,10"/>
+                                <TextBlock Text="{Binding ClienteDetalles.CorreoElectronico}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
 
                                 <TextBlock Text="Dirección:" Grid.Row="3" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
                                 <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,10">
-                                    <TextBlock Text="{Binding ClienteDetalles.Direccion}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding ClienteDetalles.Direccion}" VerticalAlignment="Center" Foreground="{StaticResource TextPrimaryBrush}"/>
                                     <Button Command="{Binding AbrirMapaCommand}" 
                                             CommandParameter="{Binding ClienteDetalles}"
                                             ToolTip="Abrir en Google Maps"
@@ -141,7 +141,7 @@
 
                                 <TextBlock Text="Link Dirección:" Grid.Row="4" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
                                 <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,10">
-                                    <TextBlock Text="{Binding ClienteDetalles.LinkDireccion}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding ClienteDetalles.LinkDireccion}" VerticalAlignment="Center" Foreground="{StaticResource TextPrimaryBrush}"/>
                                     <Button Command="{Binding AbrirLinkCommand}" 
                                             CommandParameter="{Binding ClienteDetalles.LinkDireccion}"
                                             ToolTip="Abrir enlace"
@@ -152,25 +152,25 @@
                                 </StackPanel>
 
                                 <TextBlock Text="NIT:" Grid.Row="5" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
-                                <TextBlock Text="{Binding ClienteDetalles.NIT}" Grid.Row="5" Grid.Column="1" Margin="0,0,0,10"/>
+                                <TextBlock Text="{Binding ClienteDetalles.NIT}" Grid.Row="5" Grid.Column="1" Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
 
                                 <TextBlock Text="NRC:" Grid.Row="6" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
-                                <TextBlock Text="{Binding ClienteDetalles.NRC}" Grid.Row="6" Grid.Column="1" Margin="0,0,0,10"/>
+                                <TextBlock Text="{Binding ClienteDetalles.NRC}" Grid.Row="6" Grid.Column="1" Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
 
                                 <TextBlock Text="Tipo Contribuyente:" Grid.Row="7" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
-                                <TextBlock Text="{Binding ClienteDetalles.TipoContribuyente}" Grid.Row="7" Grid.Column="1" Margin="0,0,0,10"/>
+                                <TextBlock Text="{Binding ClienteDetalles.TipoContribuyente}" Grid.Row="7" Grid.Column="1" Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
 
                                 <TextBlock Text="Giro:" Grid.Row="8" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
-                                <TextBlock Text="{Binding ClienteDetalles.Giro}" Grid.Row="8" Grid.Column="1" Margin="0,0,0,10"/>
+                                <TextBlock Text="{Binding ClienteDetalles.Giro}" Grid.Row="8" Grid.Column="1" Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
 
                                 <TextBlock Text="Tipo Documento:" Grid.Row="9" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
-                                <TextBlock Text="{Binding ClienteDetalles.TipoDocumento.Nombre}" Grid.Row="9" Grid.Column="1" Margin="0,0,0,10"/>
+                                <TextBlock Text="{Binding NombreTipoDocumentoSeleccionado}" Grid.Row="9" Grid.Column="1" Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
 
                                 <TextBlock Text="Número Documento:" Grid.Row="10" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
-                                <TextBlock Text="{Binding ClienteDetalles.NumeroDocumento}" Grid.Row="10" Grid.Column="1" Margin="0,0,0,10"/>
+                                <TextBlock Text="{Binding ClienteDetalles.NumeroDocumento}" Grid.Row="10" Grid.Column="1" Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
 
                                 <TextBlock Text="Estado:" Grid.Row="11" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
-                                <TextBlock Text="{Binding ClienteDetalles.Estado.Nombre}" Grid.Row="11" Grid.Column="1" Margin="0,0,0,10"/>
+                                <TextBlock Text="{Binding NombreEstadoSeleccionado}" Grid.Row="11" Grid.Column="1" Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
                             </Grid>
                         </StackPanel>
                     </ScrollViewer>
@@ -186,7 +186,7 @@
                 Background="#80000000" 
                 Visibility="{Binding MostrarFormulario, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Panel.ZIndex="2">
-            <Border Background="White" Width="500" Height="600" CornerRadius="5" Padding="15">
+            <Border Background="{StaticResource DarkBackgroundBrush}" Width="500" Height="600" CornerRadius="5" Padding="15">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -194,8 +194,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Usar la propiedad calculada en lugar del converter -->
-                    <TextBlock Text="{Binding TituloFormulario}" FontSize="18" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding TituloFormulario}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
 
                     <ScrollViewer Grid.Row="1" Margin="0,10,0,0">
                         <StackPanel>
@@ -250,9 +249,9 @@
                                 <TextBlock Text="Tipo Documento:" Grid.Row="9" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
                                 <ComboBox Grid.Row="9" Grid.Column="1" 
                                           ItemsSource="{Binding TiposDocumento}"
-                                          DisplayMemberPath="Nombre"
-                                          SelectedValuePath="TipoDocumentoID"
-                                          SelectedValue="{Binding ClienteDetalles.TiposDocumentoID}"
+                                            DisplayMemberPath="Nombre"
+                                            SelectedValuePath="TipoDocumentoID"
+                                            SelectedValue="{Binding ClienteDetalles.TiposDocumentoID, Mode=TwoWay}"
                                           Style="{StaticResource FormComboStyle}"/>
 
                                 <TextBlock Text="Número Documento:" Grid.Row="10" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
@@ -261,9 +260,9 @@
                                 <TextBlock Text="Estado:" Grid.Row="11" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
                                 <ComboBox Grid.Row="11" Grid.Column="1" 
                                           ItemsSource="{Binding Estados}"
-                                          DisplayMemberPath="Nombre"
+                                          DisplayMemberPath="NombreEstado"
                                           SelectedValuePath="EstadoID"
-                                          SelectedValue="{Binding ClienteDetalles.EstadoID}"
+                                          SelectedValue="{Binding ClienteDetalles.EstadoID, Mode=TwoWay}"
                                           Style="{StaticResource FormComboStyle}"/>
                             </Grid>
                         </StackPanel>
