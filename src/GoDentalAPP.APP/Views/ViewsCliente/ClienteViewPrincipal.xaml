@@ -62,7 +62,8 @@
                         <DataTemplate>
                             <Button Content="Ver más" 
                                     Command="{Binding DataContext.VerDetallesCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                    Margin="2" Padding="5"/>
+                                    CommandParameter="{Binding}"
+                                    Margin="2" Padding="5"/>        
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -249,9 +250,9 @@
                                 <TextBlock Text="Tipo Documento:" Grid.Row="9" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
                                 <ComboBox Grid.Row="9" Grid.Column="1" 
                                           ItemsSource="{Binding TiposDocumento}"
-                                            DisplayMemberPath="Nombre"
-                                            SelectedValuePath="TipoDocumentoID"
-                                            SelectedValue="{Binding ClienteDetalles.TiposDocumentoID, Mode=TwoWay}"
+                                          DisplayMemberPath="Nombre"
+                                          SelectedValuePath="TipoDocumentoID"
+                                          SelectedValue="{Binding ClienteDetalles.TiposDocumentoID, Mode=TwoWay}"
                                           Style="{StaticResource FormComboStyle}"/>
 
                                 <TextBlock Text="Número Documento:" Grid.Row="10" Grid.Column="0" Style="{StaticResource FormLabelStyle}"/>
